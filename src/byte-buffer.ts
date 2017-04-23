@@ -40,10 +40,6 @@ export class ByteBuffer {
     return this;
   }
 
-  public getLength(): number {
-    return null;
-  }
-
   public getPayload(): Array<number> {
     return this.payload;
   }
