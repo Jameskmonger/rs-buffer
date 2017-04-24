@@ -1,54 +1,34 @@
 import { TestFixture, TestCase, Expect } from "alsatian";
 
-import { ByteBuffer } from "../../src/byte-buffer";
+import { ByteBuffer, Transformation } from "../../src/byte-buffer";
 
 @TestFixture("ByteBuffer#pushByte tests")
-export class ByteBufferTestFixture {
+export class ByteBufferPushByteTestFixture {
 
-  @TestCase(1)
-  @TestCase(200)
-  @TestCase(150)
-  public shouldPushSingleByte(byte: number) {
-    const buffer = new ByteBuffer();
-
-    buffer.pushByte(byte);
-
-    Expect(buffer.getPayload()).toEqual([ byte ]);
-  }
-
-  @TestCase(5, 102)
-  @TestCase(96, 5)
-  @TestCase(103, 11)
-  public shouldPushTwoBytes(firstByte: number, secondByte: number) {
-    const buffer = new ByteBuffer();
-
-    buffer.pushByte(firstByte)
-          .pushByte(secondByte);
-
-    Expect(buffer.getPayload()).toEqual([ firstByte, secondByte ]);
-  }
-
-  @TestCase(1, 243, 254)
-  @TestCase(200, 0, 0)
-  @TestCase(150, 17, 150)
-  public shouldPushThreeBytes(firstByte: number, secondByte: number, thirdByte: number) {
-    const buffer = new ByteBuffer();
-
-    buffer.pushByte(firstByte)
-          .pushByte(secondByte)
-          .pushByte(thirdByte);
-
-    Expect(buffer.getPayload()).toEqual([ firstByte, secondByte, thirdByte ]);
-  }
-
-  @TestCase(-1)
-  @TestCase(256)
+  @TestCase(0x00 - 1)
+  @TestCase(0xFF + 1)
   public shouldThrowErrorForOutOfRangeValue(value: number) {
     const buffer = new ByteBuffer();
 
     Expect(
-      () => buffer.pushByte(value)
+      () => buffer.pushByte(value, Transformation.NONE)
     ).toThrowError(Error, "ByteBuffer#pushByte accepts a value between 0 and 255.");
+  }
+
+  @TestCase(0x12, Transformation.NONE, [ 0x12 ])
+  @TestCase(0xFF, Transformation.NONE, [ 0xFF ])
+  @TestCase(0x12, Transformation.ADD, [ 128 + 0x12 ])
+  @TestCase(0xFF, Transformation.ADD, [ 128 + 0xFF ])
+  @TestCase(0x12, Transformation.SUBTRACT, [ 128 - 0x12 ])
+  @TestCase(0xFF, Transformation.SUBTRACT, [ 128 - 0xFF ])
+  @TestCase(0x12, Transformation.NEGATE, [ 0 - 0x12 ])
+  @TestCase(0xFF, Transformation.NEGATE, [ 0 - 0xFF ])
+  public shouldPushByteWithCorrectTransformation(byte: number, transform: Transformation, expected: Array<number>) {
+    const buffer = new ByteBuffer();
+
+    buffer.pushByte(byte, transform);
+
+    Expect(buffer.getPayload()).toEqual(expected);
   }
 
 }
