@@ -1,6 +1,8 @@
 import getSigned32BitInt from "get-signed-32-bit-int";
 
-const isSigned8BitInt = (value) => value >= 0 && value <= 255;
+const UNSIGNED_8_BIT_MAX = 255;
+
+const isUnsigned8BitInt = (value) => value >= 0 && value <= UNSIGNED_8_BIT_MAX;
 
 export class ByteBuffer {
 
@@ -11,7 +13,7 @@ export class ByteBuffer {
   }
 
   public pushByte(value: number): ByteBuffer {
-    if (!isSigned8BitInt(value)) {
+    if (!isUnsigned8BitInt(value)) {
       throw Error("ByteBuffer#pushByte accepts a value between 0 and 255.");
     }
 
