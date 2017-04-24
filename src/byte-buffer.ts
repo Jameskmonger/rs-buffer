@@ -18,7 +18,7 @@ export class ByteBuffer {
 
   public pushByte(value: number): ByteBuffer {
     if (!isUnsigned8BitInt(value)) {
-      throw Error("ByteBuffer#pushByte accepts a value between 0 and 255.");
+      throw Error(`ByteBuffer#pushByte accepts a value between 0 and ${ UNSIGNED_8_BIT_MAX }.`);
     }
 
     this.payload.push(value);
@@ -28,7 +28,7 @@ export class ByteBuffer {
 
   public pushShort(value: number): ByteBuffer {
     if (!isUnsigned16BitInt(value)) {
-      throw Error("ByteBuffer#pushShort accepts a value between 0 and 65535.");
+      throw Error(`ByteBuffer#pushShort accepts a value between 0 and ${ UNSIGNED_16_BIT_MAX }.`);
     }
 
     this.pushByte(getUnsignedByte(value));
