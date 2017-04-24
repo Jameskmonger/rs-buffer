@@ -44,7 +44,7 @@ export class ByteBufferTestFixture {
     const buffer = new ByteBuffer();
 
     Expect(
-      () => buffer.pushByte(value)
+      () => buffer.pushShort(value)
     ).toThrowError(Error, "ByteBuffer#pushShort accepts a value between 0 and 65535.");
   }
 

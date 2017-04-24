@@ -1,8 +1,12 @@
 import getSigned32BitInt from "get-signed-32-bit-int";
 
 const UNSIGNED_8_BIT_MAX = 255;
+const UNSIGNED_16_BIT_MAX = 65535;
 
 const isUnsigned8BitInt = (value) => value >= 0 && value <= UNSIGNED_8_BIT_MAX;
+const isUnsigned16BitInt = (value) => value >= 0 && value <= UNSIGNED_16_BIT_MAX;
+
+const getUnsignedByte = (value) => value & 0xFF;
 
 export class ByteBuffer {
 
@@ -23,6 +27,13 @@ export class ByteBuffer {
   }
 
   public pushShort(value: number): ByteBuffer {
+    if (!isUnsigned16BitInt(value)) {
+      throw Error("ByteBuffer#pushShort accepts a value between 0 and 65535.");
+    }
+
+    this.pushByte(getUnsignedByte(value));
+    this.pushByte(getUnsignedByte(value >> 8));
+
     return this;
   }
 
