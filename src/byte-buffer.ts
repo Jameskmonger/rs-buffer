@@ -22,6 +22,10 @@ export class ByteBuffer {
     return this;
   }
 
+  public pushShort(value: number): ByteBuffer {
+    return this;
+  }
+
   public pushBits(count: number, value: number): ByteBuffer {
     return this;
   }
