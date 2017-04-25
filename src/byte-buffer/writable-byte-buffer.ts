@@ -1,5 +1,3 @@
-import getSigned32BitInt from "get-signed-32-bit-int";
-
 import { DataOrder, Transformation } from "./";
 
 const UNSIGNED_8_BIT_MAX = 0xFF;
