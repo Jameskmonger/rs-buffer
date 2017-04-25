@@ -1,4 +1,4 @@
-import { DataOrder, Transformation, applyTransformation, DataSizes } from "./";
+import { DataOrder, Transformation, transformLsb, applyTransformation, DataSizes } from "./";
 
 export class WritableByteBuffer {
 
@@ -31,10 +31,10 @@ export class WritableByteBuffer {
 
     // apply all transformations and store in big endian order
     // as it makes the code a bit cleaner when actually pushing them to payload
-    const bytesToPushBigEndian = [
+    const bytesToPushBigEndian = transformLsb([
       (value >> 8) & 0xFF,
-      applyTransformation(value & 0xFF, transformation)
-    ];
+      value & 0xFF
+    ], transformation);
 
     if (order === DataOrder.BIG_ENDIAN) {
       this.pushBytes(bytesToPushBigEndian, [ 0, 1 ]);
@@ -52,12 +52,12 @@ export class WritableByteBuffer {
 
     // apply all transformations and store in big endian order
     // as it makes the code a bit cleaner when actually pushing them to payload
-    const bytesToPushBigEndian = [
+    const bytesToPushBigEndian = transformLsb([
       (value >> 24) & 0xFF,
       (value >> 16) & 0xFF,
       (value >> 8) & 0xFF,
-      applyTransformation(value & 0xFF, transformation)
-    ];
+      value & 0xFF
+    ], transformation);
 
     if (order === DataOrder.BIG_ENDIAN) {
       if (mixed) {
@@ -81,7 +81,7 @@ export class WritableByteBuffer {
       throw Error(`ByteBuffer#pushLong accepts a value between [ 0, 0 ] and [ ${ DataSizes.UNSIGNED_32_BIT_MAX }, ${ DataSizes.UNSIGNED_32_BIT_MAX } ].`);
     }
 
-    const bytesToPushBigEndian = [
+    const bytesToPushBigEndian = transformLsb([
       (high >> 24) & 0xFF,
       (high >> 16) & 0xFF,
       (high >> 8) & 0xFF,
@@ -89,8 +89,8 @@ export class WritableByteBuffer {
       (low >> 24) & 0xFF,
       (low >> 16) & 0xFF,
       (low >> 8) & 0xFF,
-      applyTransformation(low & 0xFF, transformation)
-    ];
+      low & 0xFF
+    ], transformation);
 
     if (order === DataOrder.BIG_ENDIAN) {
       this.pushBytes(bytesToPushBigEndian, [ 0, 1, 2, 3, 4, 5, 6, 7 ]);
@@ -106,11 +106,11 @@ export class WritableByteBuffer {
       throw Error(`ByteBuffer#pushTribyte accepts a value between 0 and ${ DataSizes.UNSIGNED_24_BIT_MAX }.`);
     }
 
-    const bytesToPushBigEndian = [
+    const bytesToPushBigEndian = transformLsb([
       (value >> 16) & 0xFF,
       (value >> 8) & 0xFF,
-      applyTransformation(value & 0xFF, transformation)
-    ];
+      value & 0xFF
+    ], transformation);
 
     if (order === DataOrder.BIG_ENDIAN) {
       this.pushBytes(bytesToPushBigEndian, [ 0, 1, 2 ]);
