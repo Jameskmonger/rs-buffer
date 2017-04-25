@@ -45,6 +45,26 @@ export class WritableByteBuffer {
     return this;
   }
 
+  public pushTribyte(value: number, order: DataOrder, transformation: Transformation): WritableByteBuffer {
+    if (!DataSizes.isUnsigned24BitInt(value)) {
+      throw Error(`ByteBuffer#pushTribyte accepts a value between 0 and ${ DataSizes.UNSIGNED_24_BIT_MAX }.`);
+    }
+
+    const bytesToPushBigEndian = transformLsb([
+      (value >> 16) & 0xFF,
+      (value >> 8) & 0xFF,
+      value & 0xFF
+    ], transformation);
+
+    if (order === DataOrder.BIG_ENDIAN) {
+      this.pushBytes(bytesToPushBigEndian, [ 0, 1, 2 ]);
+    } else if (order === DataOrder.LITTLE_ENDIAN) {
+      this.pushBytes(bytesToPushBigEndian, [ 2, 1, 0 ]);
+    }
+
+    return this;
+  }
+
   public pushInt(value: number, order: DataOrder, mixed: boolean, transformation: Transformation): WritableByteBuffer {
     if (!DataSizes.isUnsigned32BitInt(value)) {
       throw Error(`ByteBuffer#pushInt accepts a value between 0 and ${ DataSizes.UNSIGNED_32_BIT_MAX }.`);
@@ -96,26 +116,6 @@ export class WritableByteBuffer {
       this.pushBytes(bytesToPushBigEndian, [ 0, 1, 2, 3, 4, 5, 6, 7 ]);
     } else if (order === DataOrder.LITTLE_ENDIAN) {
       this.pushBytes(bytesToPushBigEndian, [ 7, 6, 5, 4, 3, 2, 1, 0 ]);
-    }
-
-    return this;
-  }
-
-  public pushTribyte(value: number, order: DataOrder, transformation: Transformation): WritableByteBuffer {
-    if (!DataSizes.isUnsigned24BitInt(value)) {
-      throw Error(`ByteBuffer#pushTribyte accepts a value between 0 and ${ DataSizes.UNSIGNED_24_BIT_MAX }.`);
-    }
-
-    const bytesToPushBigEndian = transformLsb([
-      (value >> 16) & 0xFF,
-      (value >> 8) & 0xFF,
-      value & 0xFF
-    ], transformation);
-
-    if (order === DataOrder.BIG_ENDIAN) {
-      this.pushBytes(bytesToPushBigEndian, [ 0, 1, 2 ]);
-    } else if (order === DataOrder.LITTLE_ENDIAN) {
-      this.pushBytes(bytesToPushBigEndian, [ 2, 1, 0 ]);
     }
 
     return this;
