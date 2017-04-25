@@ -1,11 +1,9 @@
 import getSigned32BitInt from "get-signed-32-bit-int";
 
 // with value 0x12345678
-export enum Order {
+export enum DataOrder {
   BIG_ENDIAN, // [ 0x12, 0x34, 0x56, 0x78 ]
-  LITTLE_ENDIAN, // [ 0x78, 0x56, 0x34, 0x12 ]
-  BIG_ENDIAN_MIXED, // [ 0x56, 0x78, 0x12, 0x34 ]
-  LITTLE_ENDIAN_MIXED // [ 0x34, 0x12, 0x78, 0x56]
+  LITTLE_ENDIAN // [ 0x78, 0x56, 0x34, 0x12 ]
 }
 
 // transformation applied to LSB (value)
@@ -61,13 +59,13 @@ export class ByteBuffer {
     return this;
   }
 
-  public pushShort(value: number, order: Order, transformation: Transformation): ByteBuffer {
+  public pushShort(value: number, order: DataOrder, transformation: Transformation): ByteBuffer {
     if (!isUnsigned16BitInt(value)) {
       throw Error(`ByteBuffer#pushShort accepts a value between 0 and ${ UNSIGNED_16_BIT_MAX }.`);
     }
 
-    if (order === Order.BIG_ENDIAN_MIXED || order === Order.LITTLE_ENDIAN_MIXED) {
-      throw Error("Mixed endian order cannot be used with ByteBuffer#pushShort.");
+    if (order !== DataOrder.BIG_ENDIAN && order !== DataOrder.LITTLE_ENDIAN) {
+      throw Error("ByteBuffer#pushShort can only use big endian or little endian order.");
     }
 
     // apply all transformations and store in big endian order
@@ -77,10 +75,10 @@ export class ByteBuffer {
       applyTransformation(value & 0xFF, transformation)
     ];
 
-    if (order === Order.BIG_ENDIAN) {
+    if (order === DataOrder.BIG_ENDIAN) {
       this.payload.push(bytesToPushBigEndian[0]);
       this.payload.push(bytesToPushBigEndian[1]);
-    } else if (order === Order.LITTLE_ENDIAN) {
+    } else if (order === DataOrder.LITTLE_ENDIAN) {
       this.payload.push(bytesToPushBigEndian[1]);
       this.payload.push(bytesToPushBigEndian[0]);
     }
@@ -88,7 +86,7 @@ export class ByteBuffer {
     return this;
   }
 
-  public pushInt(value: number, order: Order, transformation: Transformation): ByteBuffer {
+  public pushInt(value: number, order: DataOrder, mixed: boolean, transformation: Transformation): ByteBuffer {
     if (!isUnsigned32BitInt(value)) {
       throw Error(`ByteBuffer#pushInt accepts a value between 0 and ${ UNSIGNED_32_BIT_MAX }.`);
     }
@@ -102,38 +100,42 @@ export class ByteBuffer {
       applyTransformation(value & 0xFF, transformation)
     ];
 
-    if (order === Order.BIG_ENDIAN) {
-      this.payload.push(bytesToPushBigEndian[0]);
-      this.payload.push(bytesToPushBigEndian[1]);
-      this.payload.push(bytesToPushBigEndian[2]);
-      this.payload.push(bytesToPushBigEndian[3]);
-    } else if (order === Order.LITTLE_ENDIAN) {
-      this.payload.push(bytesToPushBigEndian[3]);
-      this.payload.push(bytesToPushBigEndian[2]);
-      this.payload.push(bytesToPushBigEndian[1]);
-      this.payload.push(bytesToPushBigEndian[0]);
-    } else if (order === Order.BIG_ENDIAN_MIXED) {
-      this.payload.push(bytesToPushBigEndian[2]);
-      this.payload.push(bytesToPushBigEndian[3]);
-      this.payload.push(bytesToPushBigEndian[0]);
-      this.payload.push(bytesToPushBigEndian[1]);
-    } else if (order === Order.LITTLE_ENDIAN_MIXED) {
-      this.payload.push(bytesToPushBigEndian[1]);
-      this.payload.push(bytesToPushBigEndian[0]);
-      this.payload.push(bytesToPushBigEndian[3]);
-      this.payload.push(bytesToPushBigEndian[2]);
+    if (order === DataOrder.BIG_ENDIAN) {
+      if (mixed) {
+        this.payload.push(bytesToPushBigEndian[2]);
+        this.payload.push(bytesToPushBigEndian[3]);
+        this.payload.push(bytesToPushBigEndian[0]);
+        this.payload.push(bytesToPushBigEndian[1]);
+      } else {
+        this.payload.push(bytesToPushBigEndian[0]);
+        this.payload.push(bytesToPushBigEndian[1]);
+        this.payload.push(bytesToPushBigEndian[2]);
+        this.payload.push(bytesToPushBigEndian[3]);
+      }      
+    } else if (order === DataOrder.LITTLE_ENDIAN) {
+      if (mixed) {
+        this.payload.push(bytesToPushBigEndian[1]);
+        this.payload.push(bytesToPushBigEndian[0]);
+        this.payload.push(bytesToPushBigEndian[3]);
+        this.payload.push(bytesToPushBigEndian[2]);
+      } else {
+        this.payload.push(bytesToPushBigEndian[3]);
+        this.payload.push(bytesToPushBigEndian[2]);
+        this.payload.push(bytesToPushBigEndian[1]);
+        this.payload.push(bytesToPushBigEndian[0]);
+      }
     }
 
     return this;
   }
 
-  public pushLong(high: number, low: number, order: Order, transformation: Transformation): ByteBuffer {
+  public pushLong(high: number, low: number, order: DataOrder, transformation: Transformation): ByteBuffer {
     if (!isUnsigned64BitInt(high, low)) {
       throw Error(`ByteBuffer#pushLong accepts a value between [ 0, 0 ] and [ ${ UNSIGNED_32_BIT_MAX }, ${ UNSIGNED_32_BIT_MAX } ].`);
     }
 
-    if (order === Order.BIG_ENDIAN_MIXED || order === Order.LITTLE_ENDIAN_MIXED) {
-      throw Error("Mixed endian order cannot be used with ByteBuffer#pushLong.");
+    if (order !== DataOrder.BIG_ENDIAN && order !== DataOrder.LITTLE_ENDIAN) {
+      throw Error("ByteBuffer#pushLong can only use big endian or little endian order.");
     }
 
     const bytesToPushBigEndian = [
@@ -147,7 +149,7 @@ export class ByteBuffer {
       applyTransformation(low & 0xFF, transformation)
     ];
 
-    if (order === Order.BIG_ENDIAN) {
+    if (order === DataOrder.BIG_ENDIAN) {
       this.payload.push(bytesToPushBigEndian[0]);
       this.payload.push(bytesToPushBigEndian[1]);
       this.payload.push(bytesToPushBigEndian[2]);
@@ -156,7 +158,7 @@ export class ByteBuffer {
       this.payload.push(bytesToPushBigEndian[5]);
       this.payload.push(bytesToPushBigEndian[6]);
       this.payload.push(bytesToPushBigEndian[7]);
-    } else if (order === Order.LITTLE_ENDIAN) {
+    } else if (order === DataOrder.LITTLE_ENDIAN) {
       this.payload.push(bytesToPushBigEndian[7]);
       this.payload.push(bytesToPushBigEndian[6]);
       this.payload.push(bytesToPushBigEndian[5]);
@@ -170,13 +172,13 @@ export class ByteBuffer {
     return this;
   }
 
-  public pushTribyte(value: number, order: Order, transformation: Transformation): ByteBuffer {
+  public pushTribyte(value: number, order: DataOrder, transformation: Transformation): ByteBuffer {
     if (!isUnsigned24BitInt(value)) {
       throw Error(`ByteBuffer#pushTribyte accepts a value between 0 and ${ UNSIGNED_24_BIT_MAX }.`);
     }
 
-    if (order === Order.BIG_ENDIAN_MIXED || order === Order.LITTLE_ENDIAN_MIXED) {
-      throw Error("Mixed endian order cannot be used with ByteBuffer#pushTribyte.");
+    if (order !== DataOrder.BIG_ENDIAN && order !== DataOrder.LITTLE_ENDIAN) {
+      throw Error("ByteBuffer#pushTribyte can only use big endian or little endian order.");
     }
 
     const bytesToPushBigEndian = [
@@ -185,11 +187,11 @@ export class ByteBuffer {
       applyTransformation(value & 0xFF, transformation)
     ];
 
-    if (order === Order.BIG_ENDIAN) {
+    if (order === DataOrder.BIG_ENDIAN) {
       this.payload.push(bytesToPushBigEndian[0]);
       this.payload.push(bytesToPushBigEndian[1]);
       this.payload.push(bytesToPushBigEndian[2]);
-    } else if (order === Order.LITTLE_ENDIAN) {
+    } else if (order === DataOrder.LITTLE_ENDIAN) {
       this.payload.push(bytesToPushBigEndian[2]);
       this.payload.push(bytesToPushBigEndian[1]);
       this.payload.push(bytesToPushBigEndian[0]);
