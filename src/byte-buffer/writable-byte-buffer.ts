@@ -1,15 +1,4 @@
-import { DataOrder, Transformation } from "./";
-
-const UNSIGNED_8_BIT_MAX = 0xFF;
-const UNSIGNED_16_BIT_MAX = 0xFFFF;
-const UNSIGNED_24_BIT_MAX = 0xFFFFFF;
-const UNSIGNED_32_BIT_MAX = 0xFFFFFFFF;
-
-const isUnsigned8BitInt = (value) => value >= 0 && value <= UNSIGNED_8_BIT_MAX;
-const isUnsigned16BitInt = (value) => value >= 0 && value <= UNSIGNED_16_BIT_MAX;
-const isUnsigned24BitInt = (value) => value >= 0 && value <= UNSIGNED_24_BIT_MAX;
-const isUnsigned32BitInt = (value) => value >= 0 && value <= UNSIGNED_32_BIT_MAX;
-const isUnsigned64BitInt = (high, low) => isUnsigned32BitInt(high) && isUnsigned32BitInt(low);
+import { DataOrder, Transformation, DataSizes } from "./";
 
 const applyTransformation = (byte: number, transformation: Transformation) => {
   if (transformation === Transformation.ADD) {
@@ -36,8 +25,8 @@ export class WritableByteBuffer {
   }
 
   public pushByte(value: number, transformation: Transformation): WritableByteBuffer {
-    if (!isUnsigned8BitInt(value)) {
-      throw Error(`ByteBuffer#pushByte accepts a value between 0 and ${ UNSIGNED_8_BIT_MAX }.`);
+    if (!DataSizes.isUnsigned8BitInt(value)) {
+      throw Error(`ByteBuffer#pushByte accepts a value between 0 and ${ DataSizes.UNSIGNED_8_BIT_MAX }.`);
     }
 
     this.payload.push(applyTransformation(value, transformation));
@@ -46,8 +35,8 @@ export class WritableByteBuffer {
   }
 
   public pushShort(value: number, order: DataOrder, transformation: Transformation): WritableByteBuffer {
-    if (!isUnsigned16BitInt(value)) {
-      throw Error(`ByteBuffer#pushShort accepts a value between 0 and ${ UNSIGNED_16_BIT_MAX }.`);
+    if (!DataSizes.isUnsigned16BitInt(value)) {
+      throw Error(`ByteBuffer#pushShort accepts a value between 0 and ${ DataSizes.UNSIGNED_16_BIT_MAX }.`);
     }
 
     // apply all transformations and store in big endian order
@@ -69,8 +58,8 @@ export class WritableByteBuffer {
   }
 
   public pushInt(value: number, order: DataOrder, mixed: boolean, transformation: Transformation): WritableByteBuffer {
-    if (!isUnsigned32BitInt(value)) {
-      throw Error(`ByteBuffer#pushInt accepts a value between 0 and ${ UNSIGNED_32_BIT_MAX }.`);
+    if (!DataSizes.isUnsigned32BitInt(value)) {
+      throw Error(`ByteBuffer#pushInt accepts a value between 0 and ${ DataSizes.UNSIGNED_32_BIT_MAX }.`);
     }
 
     // apply all transformations and store in big endian order
@@ -112,8 +101,8 @@ export class WritableByteBuffer {
   }
 
   public pushLong(high: number, low: number, order: DataOrder, transformation: Transformation): WritableByteBuffer {
-    if (!isUnsigned64BitInt(high, low)) {
-      throw Error(`ByteBuffer#pushLong accepts a value between [ 0, 0 ] and [ ${ UNSIGNED_32_BIT_MAX }, ${ UNSIGNED_32_BIT_MAX } ].`);
+    if (!DataSizes.isUnsigned64BitInt(high, low)) {
+      throw Error(`ByteBuffer#pushLong accepts a value between [ 0, 0 ] and [ ${ DataSizes.UNSIGNED_32_BIT_MAX }, ${ DataSizes.UNSIGNED_32_BIT_MAX } ].`);
     }
 
     const bytesToPushBigEndian = [
@@ -151,8 +140,8 @@ export class WritableByteBuffer {
   }
 
   public pushTribyte(value: number, order: DataOrder, transformation: Transformation): WritableByteBuffer {
-    if (!isUnsigned24BitInt(value)) {
-      throw Error(`ByteBuffer#pushTribyte accepts a value between 0 and ${ UNSIGNED_24_BIT_MAX }.`);
+    if (!DataSizes.isUnsigned24BitInt(value)) {
+      throw Error(`ByteBuffer#pushTribyte accepts a value between 0 and ${ DataSizes.UNSIGNED_24_BIT_MAX }.`);
     }
 
     const bytesToPushBigEndian = [
