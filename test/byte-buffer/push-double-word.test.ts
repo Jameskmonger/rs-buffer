@@ -2,8 +2,8 @@ import { TestFixture, TestCase, Expect } from "alsatian";
 
 import { ByteBuffer, DataOrder, Transformation } from "../../src/byte-buffer";
 
-@TestFixture("ByteBuffer#pushInt tests")
-export class ByteBufferPushIntTestFixture {
+@TestFixture("ByteBuffer#pushDoubleWord tests")
+export class ByteBufferPushDoubleWordTestFixture {
 
   @TestCase(0x00000000 - 1)
   @TestCase(0xFFFFFFFF + 1)
@@ -11,8 +11,8 @@ export class ByteBufferPushIntTestFixture {
     const buffer = new ByteBuffer();
 
     Expect(
-      () => buffer.pushInt(value, DataOrder.BIG_ENDIAN, false, Transformation.NONE)
-    ).toThrowError(Error, "ByteBuffer#pushInt accepts a value between 0 and 4294967295.");
+      () => buffer.pushDoubleWord(value, DataOrder.BIG_ENDIAN, false, Transformation.NONE)
+    ).toThrowError(Error, "ByteBuffer#pushDoubleWord accepts a value between 0 and 4294967295.");
   }
 
   @TestCase(0x12345678, DataOrder.BIG_ENDIAN, false, [ 0x12, 0x34, 0x56, 0x78 ])
@@ -23,10 +23,10 @@ export class ByteBufferPushIntTestFixture {
   @TestCase(0xFFFFFFFF, DataOrder.LITTLE_ENDIAN, false, [ 0xFF, 0xFF, 0xFF, 0xFF ])
   @TestCase(0x12345678, DataOrder.LITTLE_ENDIAN, true, [ 0x34, 0x12, 0x78, 0x56 ])
   @TestCase(0xFFFFFFFF, DataOrder.LITTLE_ENDIAN, true, [ 0xFF, 0xFF, 0xFF, 0xFF ])
-  public shouldPushIntInCorrectOrder(value: number, order: DataOrder, mixed: boolean, expected: Array<number>) {
+  public shouldPushPayloadInCorrectOrder(value: number, order: DataOrder, mixed: boolean, expected: Array<number>) {
     const buffer = new ByteBuffer();
 
-    buffer.pushInt(value, order, mixed, Transformation.NONE);
+    buffer.pushDoubleWord(value, order, mixed, Transformation.NONE);
 
     Expect(buffer.getPayload()).toEqual(expected);
   }
@@ -46,7 +46,7 @@ export class ByteBufferPushIntTestFixture {
   public shouldApplyTransformationToLSB(value: number, transformation: Transformation, order: DataOrder, mixed: boolean, expected: Array<number>) {
     const buffer = new ByteBuffer();
 
-    buffer.pushInt(value, order, mixed, transformation);
+    buffer.pushDoubleWord(value, order, mixed, transformation);
 
     Expect(buffer.getPayload()).toEqual(expected);
   }
