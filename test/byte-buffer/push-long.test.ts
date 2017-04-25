@@ -2,8 +2,8 @@ import { TestFixture, TestCase, Expect, FocusTest } from "alsatian";
 
 import { ByteBuffer, DataOrder, Transformation } from "../../src/byte-buffer";
 
-@TestFixture("ByteBuffer#pushQuadWord tests")
-export class ByteBufferPushQuadWordTestFixture {
+@TestFixture("ByteBuffer#pushLong tests")
+export class ByteBufferPushLongTestFixture {
 
   @TestCase(0x00000000, 0x00000000 - 1)
   @TestCase(0xFFFFFFFF, 0xFFFFFFFF + 1)
@@ -11,18 +11,18 @@ export class ByteBufferPushQuadWordTestFixture {
     const buffer = new ByteBuffer();
 
     Expect(
-      () => buffer.pushQuadWord(high, low, DataOrder.BIG_ENDIAN, Transformation.NONE)
-    ).toThrowError(Error, "ByteBuffer#pushQuadWord accepts a value between [ 0, 0 ] and [ 4294967295, 4294967295 ].");
+      () => buffer.pushLong(high, low, DataOrder.BIG_ENDIAN, Transformation.NONE)
+    ).toThrowError(Error, "ByteBuffer#pushLong accepts a value between [ 0, 0 ] and [ 4294967295, 4294967295 ].");
   }
 
   @TestCase(0x01234567, 0x89ABCDEF, DataOrder.BIG_ENDIAN, [ 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF ])
   @TestCase(0xFFFFFFFF, 0xFFFFFFFF, DataOrder.BIG_ENDIAN, [ 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF ])
   @TestCase(0x01234567, 0x89ABCDEF, DataOrder.LITTLE_ENDIAN, [ 0xEF, 0xCD, 0xAB, 0x89, 0x67, 0x45, 0x23, 0x01 ])
   @TestCase(0xFFFFFFFF, 0xFFFFFFFF, DataOrder.LITTLE_ENDIAN, [ 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF ])
-  public shouldPushPayloadInCorrectOrder(high: number, low: number, order: DataOrder.BIG_ENDIAN | DataOrder.LITTLE_ENDIAN, expected: Array<number>) {
+  public shouldPushLongInCorrectOrder(high: number, low: number, order: DataOrder.BIG_ENDIAN | DataOrder.LITTLE_ENDIAN, expected: Array<number>) {
     const buffer = new ByteBuffer();
 
-    buffer.pushQuadWord(high, low, order, Transformation.NONE);
+    buffer.pushLong(high, low, order, Transformation.NONE);
 
     Expect(buffer.getPayload()).toEqual(expected);
   }
@@ -36,7 +36,7 @@ export class ByteBufferPushQuadWordTestFixture {
   public shouldApplyTransformationToLSB(high: number, low: number, transformation: Transformation, order: DataOrder.BIG_ENDIAN | DataOrder.LITTLE_ENDIAN, expected: Array<number>) {
     const buffer = new ByteBuffer();
 
-    buffer.pushQuadWord(high, low, order, transformation);
+    buffer.pushLong(high, low, order, transformation);
 
     Expect(buffer.getPayload()).toEqual(expected);
   }

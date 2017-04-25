@@ -2,8 +2,8 @@ import { TestFixture, TestCase, Expect } from "alsatian";
 
 import { ByteBuffer, DataOrder, Transformation } from "../../src/byte-buffer";
 
-@TestFixture("ByteBuffer#pushTripleWord tests")
-export class ByteBufferPushTripleWordTestFixture {
+@TestFixture("ByteBuffer#pushTribyte tests")
+export class ByteBufferPushTribyteTestFixture {
 
   @TestCase(0x000000 - 1)
   @TestCase(0xFFFFFF + 1)
@@ -11,18 +11,18 @@ export class ByteBufferPushTripleWordTestFixture {
     const buffer = new ByteBuffer();
 
     Expect(
-      () => buffer.pushTripleWord(value, DataOrder.BIG_ENDIAN, Transformation.NONE)
-    ).toThrowError(Error, "ByteBuffer#pushTripleWord accepts a value between 0 and 16777215.");
+      () => buffer.pushTribyte(value, DataOrder.BIG_ENDIAN, Transformation.NONE)
+    ).toThrowError(Error, "ByteBuffer#pushTribyte accepts a value between 0 and 16777215.");
   }
 
   @TestCase(0x123456, DataOrder.BIG_ENDIAN, [ 0x12, 0x34, 0x56 ])
   @TestCase(0xFFFFFF, DataOrder.BIG_ENDIAN, [ 0xFF, 0xFF, 0xFF ])
   @TestCase(0x123456, DataOrder.LITTLE_ENDIAN, [ 0x56, 0x34, 0x12 ])
   @TestCase(0xFFFFFF, DataOrder.LITTLE_ENDIAN, [ 0xFF, 0xFF, 0xFF ])
-  public shouldPushPayloadInCorrectOrder(value: number, order: DataOrder.BIG_ENDIAN | DataOrder.LITTLE_ENDIAN, expected: Array<number>) {
+  public shouldPushTribyteInCorrectOrder(value: number, order: DataOrder.BIG_ENDIAN | DataOrder.LITTLE_ENDIAN, expected: Array<number>) {
     const buffer = new ByteBuffer();
 
-    buffer.pushTripleWord(value, order, Transformation.NONE);
+    buffer.pushTribyte(value, order, Transformation.NONE);
 
     Expect(buffer.getPayload()).toEqual(expected);
   }
@@ -36,7 +36,7 @@ export class ByteBufferPushTripleWordTestFixture {
   public shouldApplyTransformationToLSB(value: number, transformation: Transformation, order: DataOrder.BIG_ENDIAN | DataOrder.LITTLE_ENDIAN, expected: Array<number>) {
     const buffer = new ByteBuffer();
 
-    buffer.pushTripleWord(value, order, transformation);
+    buffer.pushTribyte(value, order, transformation);
 
     Expect(buffer.getPayload()).toEqual(expected);
   }

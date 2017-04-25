@@ -59,9 +59,13 @@ export class ByteBuffer {
     return this;
   }
 
-  public pushWord(value: number, order: DataOrder, transformation: Transformation): ByteBuffer {
+  public pushShort(value: number, order: DataOrder, transformation: Transformation): ByteBuffer {
     if (!isUnsigned16BitInt(value)) {
-      throw Error(`ByteBuffer#pushWord accepts a value between 0 and ${ UNSIGNED_16_BIT_MAX }.`);
+      throw Error(`ByteBuffer#pushShort accepts a value between 0 and ${ UNSIGNED_16_BIT_MAX }.`);
+    }
+
+    if (order !== DataOrder.BIG_ENDIAN && order !== DataOrder.LITTLE_ENDIAN) {
+      throw Error("ByteBuffer#pushShort can only use big endian or little endian order.");
     }
 
     // apply all transformations and store in big endian order
@@ -82,9 +86,9 @@ export class ByteBuffer {
     return this;
   }
 
-  public pushDoubleWord(value: number, order: DataOrder, mixed: boolean, transformation: Transformation): ByteBuffer {
+  public pushInt(value: number, order: DataOrder, mixed: boolean, transformation: Transformation): ByteBuffer {
     if (!isUnsigned32BitInt(value)) {
-      throw Error(`ByteBuffer#pushDoubleWord accepts a value between 0 and ${ UNSIGNED_32_BIT_MAX }.`);
+      throw Error(`ByteBuffer#pushInt accepts a value between 0 and ${ UNSIGNED_32_BIT_MAX }.`);
     }
 
     // apply all transformations and store in big endian order
@@ -125,9 +129,13 @@ export class ByteBuffer {
     return this;
   }
 
-  public pushQuadWord(high: number, low: number, order: DataOrder, transformation: Transformation): ByteBuffer {
+  public pushLong(high: number, low: number, order: DataOrder, transformation: Transformation): ByteBuffer {
     if (!isUnsigned64BitInt(high, low)) {
-      throw Error(`ByteBuffer#pushQuadWord accepts a value between [ 0, 0 ] and [ ${ UNSIGNED_32_BIT_MAX }, ${ UNSIGNED_32_BIT_MAX } ].`);
+      throw Error(`ByteBuffer#pushLong accepts a value between [ 0, 0 ] and [ ${ UNSIGNED_32_BIT_MAX }, ${ UNSIGNED_32_BIT_MAX } ].`);
+    }
+
+    if (order !== DataOrder.BIG_ENDIAN && order !== DataOrder.LITTLE_ENDIAN) {
+      throw Error("ByteBuffer#pushLong can only use big endian or little endian order.");
     }
 
     const bytesToPushBigEndian = [
@@ -164,9 +172,13 @@ export class ByteBuffer {
     return this;
   }
 
-  public pushTripleWord(value: number, order: DataOrder, transformation: Transformation): ByteBuffer {
+  public pushTribyte(value: number, order: DataOrder, transformation: Transformation): ByteBuffer {
     if (!isUnsigned24BitInt(value)) {
-      throw Error(`ByteBuffer#pushTripleWord accepts a value between 0 and ${ UNSIGNED_24_BIT_MAX }.`);
+      throw Error(`ByteBuffer#pushTribyte accepts a value between 0 and ${ UNSIGNED_24_BIT_MAX }.`);
+    }
+
+    if (order !== DataOrder.BIG_ENDIAN && order !== DataOrder.LITTLE_ENDIAN) {
+      throw Error("ByteBuffer#pushTribyte can only use big endian or little endian order.");
     }
 
     const bytesToPushBigEndian = [
