@@ -29,10 +29,10 @@ export class ByteBufferPushShortTestFixture {
   @TestCase(0xFFFF, Order.BIG_ENDIAN, [ 0xFF, 0xFF ])
   @TestCase(0x1234, Order.LITTLE_ENDIAN, [ 0x34, 0x12 ])
   @TestCase(0xFFFF, Order.LITTLE_ENDIAN, [ 0xFF, 0xFF ])
-  public shouldPushShortInCorrectOrder(short: number, order: Order, expected: Array<number>) {
+  public shouldPushShortInCorrectOrder(value: number, order: Order, expected: Array<number>) {
     const buffer = new ByteBuffer();
 
-    buffer.pushShort(short, order, Transformation.NONE);
+    buffer.pushShort(value, order, Transformation.NONE);
 
     Expect(buffer.getPayload()).toEqual(expected);
   }

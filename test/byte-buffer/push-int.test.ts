@@ -23,10 +23,10 @@ export class ByteBufferPushIntTestFixture {
   @TestCase(0xFFFFFFFF, Order.LITTLE_ENDIAN, [ 0xFF, 0xFF, 0xFF, 0xFF ])
   @TestCase(0x12345678, Order.LITTLE_ENDIAN_MIXED, [ 0x34, 0x12, 0x78, 0x56 ])
   @TestCase(0xFFFFFFFF, Order.LITTLE_ENDIAN_MIXED, [ 0xFF, 0xFF, 0xFF, 0xFF ])
-  public shouldPushIntInCorrectOrder(int: number, order: Order, expected: Array<number>) {
+  public shouldPushIntInCorrectOrder(value: number, order: Order, expected: Array<number>) {
     const buffer = new ByteBuffer();
 
-    buffer.pushInt(int, order, Transformation.NONE);
+    buffer.pushInt(value, order, Transformation.NONE);
 
     Expect(buffer.getPayload()).toEqual(expected);
   }

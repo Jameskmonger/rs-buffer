@@ -23,10 +23,10 @@ export class ByteBufferPushByteTestFixture {
   @TestCase(0xFF, Transformation.SUBTRACT, [ 128 - 0xFF ])
   @TestCase(0x12, Transformation.NEGATE, [ 0 - 0x12 ])
   @TestCase(0xFF, Transformation.NEGATE, [ 0 - 0xFF ])
-  public shouldPushByteWithCorrectTransformation(byte: number, transform: Transformation, expected: Array<number>) {
+  public shouldPushByteWithCorrectTransformation(value: number, transform: Transformation, expected: Array<number>) {
     const buffer = new ByteBuffer();
 
-    buffer.pushByte(byte, transform);
+    buffer.pushByte(value, transform);
 
     Expect(buffer.getPayload()).toEqual(expected);
   }
