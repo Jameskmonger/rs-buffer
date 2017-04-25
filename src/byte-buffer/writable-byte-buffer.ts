@@ -1,20 +1,4 @@
-import { DataOrder, Transformation, DataSizes } from "./";
-
-const applyTransformation = (byte: number, transformation: Transformation) => {
-  if (transformation === Transformation.ADD) {
-    return 128 + byte;
-  }
-
-  if (transformation === Transformation.SUBTRACT) {
-    return 128 - byte;
-  }
-
-  if (transformation === Transformation.NEGATE) {
-    return 0 - byte;
-  }
-
-  return byte;
-}
+import { DataOrder, Transformation, applyTransformation, DataSizes } from "./";
 
 export class WritableByteBuffer {
 
@@ -24,12 +8,18 @@ export class WritableByteBuffer {
     this.payload = [];
   }
 
+  private pushBytes(bytesInBigEndianOrder: Array<number>, orderToPush: Array<number>): void {
+    orderToPush.forEach(i => this.payload.push(bytesInBigEndianOrder[i]));
+  }
+
   public pushByte(value: number, transformation: Transformation): WritableByteBuffer {
     if (!DataSizes.isUnsigned8BitInt(value)) {
       throw Error(`ByteBuffer#pushByte accepts a value between 0 and ${ DataSizes.UNSIGNED_8_BIT_MAX }.`);
     }
 
-    this.payload.push(applyTransformation(value, transformation));
+    const transformedByte = applyTransformation(value, transformation); 
+
+    this.payload.push(transformedByte);
 
     return this;
   }
@@ -42,16 +32,14 @@ export class WritableByteBuffer {
     // apply all transformations and store in big endian order
     // as it makes the code a bit cleaner when actually pushing them to payload
     const bytesToPushBigEndian = [
-      value >> 8,
+      (value >> 8) & 0xFF,
       applyTransformation(value & 0xFF, transformation)
     ];
 
     if (order === DataOrder.BIG_ENDIAN) {
-      this.payload.push(bytesToPushBigEndian[0]);
-      this.payload.push(bytesToPushBigEndian[1]);
+      this.pushBytes(bytesToPushBigEndian, [ 0, 1 ]);
     } else if (order === DataOrder.LITTLE_ENDIAN) {
-      this.payload.push(bytesToPushBigEndian[1]);
-      this.payload.push(bytesToPushBigEndian[0]);
+      this.pushBytes(bytesToPushBigEndian, [ 1, 0 ]);
     }
 
     return this;
@@ -73,27 +61,15 @@ export class WritableByteBuffer {
 
     if (order === DataOrder.BIG_ENDIAN) {
       if (mixed) {
-        this.payload.push(bytesToPushBigEndian[2]);
-        this.payload.push(bytesToPushBigEndian[3]);
-        this.payload.push(bytesToPushBigEndian[0]);
-        this.payload.push(bytesToPushBigEndian[1]);
+        this.pushBytes(bytesToPushBigEndian, [ 2, 3, 0, 1 ]);
       } else {
-        this.payload.push(bytesToPushBigEndian[0]);
-        this.payload.push(bytesToPushBigEndian[1]);
-        this.payload.push(bytesToPushBigEndian[2]);
-        this.payload.push(bytesToPushBigEndian[3]);
+        this.pushBytes(bytesToPushBigEndian, [ 0, 1, 2, 3 ]);
       }      
     } else if (order === DataOrder.LITTLE_ENDIAN) {
       if (mixed) {
-        this.payload.push(bytesToPushBigEndian[1]);
-        this.payload.push(bytesToPushBigEndian[0]);
-        this.payload.push(bytesToPushBigEndian[3]);
-        this.payload.push(bytesToPushBigEndian[2]);
+        this.pushBytes(bytesToPushBigEndian, [ 1, 0, 3, 2 ]);
       } else {
-        this.payload.push(bytesToPushBigEndian[3]);
-        this.payload.push(bytesToPushBigEndian[2]);
-        this.payload.push(bytesToPushBigEndian[1]);
-        this.payload.push(bytesToPushBigEndian[0]);
+        this.pushBytes(bytesToPushBigEndian, [ 3, 2, 1, 0 ]);
       }
     }
 
@@ -117,23 +93,9 @@ export class WritableByteBuffer {
     ];
 
     if (order === DataOrder.BIG_ENDIAN) {
-      this.payload.push(bytesToPushBigEndian[0]);
-      this.payload.push(bytesToPushBigEndian[1]);
-      this.payload.push(bytesToPushBigEndian[2]);
-      this.payload.push(bytesToPushBigEndian[3]);
-      this.payload.push(bytesToPushBigEndian[4]);
-      this.payload.push(bytesToPushBigEndian[5]);
-      this.payload.push(bytesToPushBigEndian[6]);
-      this.payload.push(bytesToPushBigEndian[7]);
+      this.pushBytes(bytesToPushBigEndian, [ 0, 1, 2, 3, 4, 5, 6, 7 ]);
     } else if (order === DataOrder.LITTLE_ENDIAN) {
-      this.payload.push(bytesToPushBigEndian[7]);
-      this.payload.push(bytesToPushBigEndian[6]);
-      this.payload.push(bytesToPushBigEndian[5]);
-      this.payload.push(bytesToPushBigEndian[4]);
-      this.payload.push(bytesToPushBigEndian[3]);
-      this.payload.push(bytesToPushBigEndian[2]);
-      this.payload.push(bytesToPushBigEndian[1]);
-      this.payload.push(bytesToPushBigEndian[0]);
+      this.pushBytes(bytesToPushBigEndian, [ 7, 6, 5, 4, 3, 2, 1, 0 ]);
     }
 
     return this;
@@ -151,13 +113,9 @@ export class WritableByteBuffer {
     ];
 
     if (order === DataOrder.BIG_ENDIAN) {
-      this.payload.push(bytesToPushBigEndian[0]);
-      this.payload.push(bytesToPushBigEndian[1]);
-      this.payload.push(bytesToPushBigEndian[2]);
+      this.pushBytes(bytesToPushBigEndian, [ 0, 1, 2 ]);
     } else if (order === DataOrder.LITTLE_ENDIAN) {
-      this.payload.push(bytesToPushBigEndian[2]);
-      this.payload.push(bytesToPushBigEndian[1]);
-      this.payload.push(bytesToPushBigEndian[0]);
+      this.pushBytes(bytesToPushBigEndian, [ 2, 1, 0 ]);
     }
 
     return this;
