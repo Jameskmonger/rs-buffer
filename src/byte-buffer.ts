@@ -64,10 +64,6 @@ export class ByteBuffer {
       throw Error(`ByteBuffer#pushShort accepts a value between 0 and ${ UNSIGNED_16_BIT_MAX }.`);
     }
 
-    if (order !== DataOrder.BIG_ENDIAN && order !== DataOrder.LITTLE_ENDIAN) {
-      throw Error("ByteBuffer#pushShort can only use big endian or little endian order.");
-    }
-
     // apply all transformations and store in big endian order
     // as it makes the code a bit cleaner when actually pushing them to payload
     const bytesToPushBigEndian = [
@@ -134,10 +130,6 @@ export class ByteBuffer {
       throw Error(`ByteBuffer#pushLong accepts a value between [ 0, 0 ] and [ ${ UNSIGNED_32_BIT_MAX }, ${ UNSIGNED_32_BIT_MAX } ].`);
     }
 
-    if (order !== DataOrder.BIG_ENDIAN && order !== DataOrder.LITTLE_ENDIAN) {
-      throw Error("ByteBuffer#pushLong can only use big endian or little endian order.");
-    }
-
     const bytesToPushBigEndian = [
       (high >> 24) & 0xFF,
       (high >> 16) & 0xFF,
@@ -175,10 +167,6 @@ export class ByteBuffer {
   public pushTribyte(value: number, order: DataOrder, transformation: Transformation): ByteBuffer {
     if (!isUnsigned24BitInt(value)) {
       throw Error(`ByteBuffer#pushTribyte accepts a value between 0 and ${ UNSIGNED_24_BIT_MAX }.`);
-    }
-
-    if (order !== DataOrder.BIG_ENDIAN && order !== DataOrder.LITTLE_ENDIAN) {
-      throw Error("ByteBuffer#pushTribyte can only use big endian or little endian order.");
     }
 
     const bytesToPushBigEndian = [
