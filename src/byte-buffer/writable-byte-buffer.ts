@@ -1,18 +1,6 @@
 import getSigned32BitInt from "get-signed-32-bit-int";
 
-// with value 0x12345678
-export enum DataOrder {
-  BIG_ENDIAN, // [ 0x12, 0x34, 0x56, 0x78 ]
-  LITTLE_ENDIAN // [ 0x78, 0x56, 0x34, 0x12 ]
-}
-
-// transformation applied to LSB (value)
-export enum Transformation {
-  NONE, // value
-  ADD, // 128 + value
-  SUBTRACT, // 128 - value
-  NEGATE // 0 - value
-}
+import { DataOrder, Transformation } from "./";
 
 const UNSIGNED_8_BIT_MAX = 0xFF;
 const UNSIGNED_16_BIT_MAX = 0xFFFF;

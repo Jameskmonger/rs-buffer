@@ -1,6 +1,7 @@
 import { TestFixture, TestCase, Expect } from "alsatian";
 
-import { WritableByteBuffer, DataOrder, Transformation } from "../../../src/byte-buffer/writable-byte-buffer";;
+import { DataOrder, Transformation } from "../../../src/byte-buffer";
+import { WritableByteBuffer } from "../../../src/byte-buffer/writable-byte-buffer";
 
 @TestFixture("ByteBuffer#pushTribyte tests")
 export class ByteBufferPushTribyteTestFixture {
