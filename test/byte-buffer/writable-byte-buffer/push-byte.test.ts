@@ -1,6 +1,6 @@
 import { TestFixture, TestCase, Expect } from "alsatian";
 
-import { ByteBuffer, Transformation } from "../../src/byte-buffer";
+import { WritableByteBuffer, Transformation } from "../../../src/byte-buffer/writable-byte-buffer";
 
 @TestFixture("ByteBuffer#pushByte tests")
 export class ByteBufferPushByteTestFixture {
@@ -8,7 +8,7 @@ export class ByteBufferPushByteTestFixture {
   @TestCase(0x00 - 1)
   @TestCase(0xFF + 1)
   public shouldThrowErrorForOutOfRangeValue(value: number) {
-    const buffer = new ByteBuffer();
+    const buffer = new WritableByteBuffer();
 
     Expect(
       () => buffer.pushByte(value, Transformation.NONE)
@@ -24,7 +24,7 @@ export class ByteBufferPushByteTestFixture {
   @TestCase(0x12, Transformation.NEGATE, [ 0 - 0x12 ])
   @TestCase(0xFF, Transformation.NEGATE, [ 0 - 0xFF ])
   public shouldPushByteWithCorrectTransformation(value: number, transform: Transformation, expected: Array<number>) {
-    const buffer = new ByteBuffer();
+    const buffer = new WritableByteBuffer();
 
     buffer.pushByte(value, transform);
 

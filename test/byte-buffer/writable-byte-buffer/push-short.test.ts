@@ -1,6 +1,6 @@
 import { TestFixture, TestCase, Test, Expect } from "alsatian";
 
-import { ByteBuffer, DataOrder, Transformation } from "../../src/byte-buffer";
+import { WritableByteBuffer, DataOrder, Transformation } from "../../../src/byte-buffer/writable-byte-buffer";;
 
 @TestFixture("ByteBuffer#pushShort tests")
 export class ByteBufferPushShortTestFixture {
@@ -8,7 +8,7 @@ export class ByteBufferPushShortTestFixture {
   @TestCase(0x0000 - 1)
   @TestCase(0xFFFF + 1)
   public shouldThrowErrorForOutOfRangeValue(value: number) {
-    const buffer = new ByteBuffer();
+    const buffer = new WritableByteBuffer();
 
     Expect(
       () => buffer.pushShort(value, DataOrder.BIG_ENDIAN, Transformation.NONE)
@@ -20,7 +20,7 @@ export class ByteBufferPushShortTestFixture {
   @TestCase(0x1234, DataOrder.LITTLE_ENDIAN, [ 0x34, 0x12 ])
   @TestCase(0xFFFF, DataOrder.LITTLE_ENDIAN, [ 0xFF, 0xFF ])
   public shouldPushShortInCorrectOrder(value: number, order: DataOrder.BIG_ENDIAN | DataOrder.LITTLE_ENDIAN, expected: Array<number>) {
-    const buffer = new ByteBuffer();
+    const buffer = new WritableByteBuffer();
 
     buffer.pushShort(value, order, Transformation.NONE);
 
@@ -34,7 +34,7 @@ export class ByteBufferPushShortTestFixture {
   @TestCase(0x1234, Transformation.NEGATE, DataOrder.BIG_ENDIAN, [ 0x12, 0 - 0x34 ])
   @TestCase(0x1234, Transformation.NEGATE, DataOrder.LITTLE_ENDIAN, [ 0 - 0x34, 0x12 ])
   public shouldApplyTransformationToLSB(value: number, transformation: Transformation, order: DataOrder.BIG_ENDIAN | DataOrder.LITTLE_ENDIAN, expected: Array<number>) {
-    const buffer = new ByteBuffer();
+    const buffer = new WritableByteBuffer();
 
     buffer.pushShort(value, order, transformation);
 

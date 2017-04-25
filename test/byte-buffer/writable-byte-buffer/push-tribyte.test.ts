@@ -1,6 +1,6 @@
 import { TestFixture, TestCase, Expect } from "alsatian";
 
-import { ByteBuffer, DataOrder, Transformation } from "../../src/byte-buffer";
+import { WritableByteBuffer, DataOrder, Transformation } from "../../../src/byte-buffer/writable-byte-buffer";;
 
 @TestFixture("ByteBuffer#pushTribyte tests")
 export class ByteBufferPushTribyteTestFixture {
@@ -8,7 +8,7 @@ export class ByteBufferPushTribyteTestFixture {
   @TestCase(0x000000 - 1)
   @TestCase(0xFFFFFF + 1)
   public shouldThrowErrorForOutOfRangeValue(value: number) {
-    const buffer = new ByteBuffer();
+    const buffer = new WritableByteBuffer();
 
     Expect(
       () => buffer.pushTribyte(value, DataOrder.BIG_ENDIAN, Transformation.NONE)
@@ -20,7 +20,7 @@ export class ByteBufferPushTribyteTestFixture {
   @TestCase(0x123456, DataOrder.LITTLE_ENDIAN, [ 0x56, 0x34, 0x12 ])
   @TestCase(0xFFFFFF, DataOrder.LITTLE_ENDIAN, [ 0xFF, 0xFF, 0xFF ])
   public shouldPushTribyteInCorrectOrder(value: number, order: DataOrder.BIG_ENDIAN | DataOrder.LITTLE_ENDIAN, expected: Array<number>) {
-    const buffer = new ByteBuffer();
+    const buffer = new WritableByteBuffer();
 
     buffer.pushTribyte(value, order, Transformation.NONE);
 
@@ -34,7 +34,7 @@ export class ByteBufferPushTribyteTestFixture {
   @TestCase(0x123456, Transformation.NEGATE, DataOrder.BIG_ENDIAN, [ 0x12, 0x34, 0 - 0x56 ])
   @TestCase(0x123456, Transformation.NEGATE, DataOrder.LITTLE_ENDIAN, [ 0 - 0x56, 0x34, 0x12 ])
   public shouldApplyTransformationToLSB(value: number, transformation: Transformation, order: DataOrder.BIG_ENDIAN | DataOrder.LITTLE_ENDIAN, expected: Array<number>) {
-    const buffer = new ByteBuffer();
+    const buffer = new WritableByteBuffer();
 
     buffer.pushTribyte(value, order, transformation);
 
