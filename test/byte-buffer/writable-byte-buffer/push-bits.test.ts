@@ -1,5 +1,6 @@
-import { TestFixture, TestCase, Expect } from "alsatian";
+import { TestFixture, TestCase, Test, Expect } from "alsatian";
 
+import { Transformation } from "../../../src/byte-buffer";
 import { WritableByteBuffer } from "../../../src/byte-buffer/writable-byte-buffer";
 
 @TestFixture("ByteBuffer#pushBits tests")
@@ -33,6 +34,18 @@ export class ByteBufferPushBitsTestFixture {
             .pushBits(secondCount, secondValue);
 
         Expect(byteBuffer.getPayload()).toEqual([ expected ]);
+    }
+
+    @Test()
+    public shouldPushByteDataAfter() {
+        const byteBuffer = new WritableByteBuffer();
+
+        byteBuffer.bitAccess()
+            .pushBits(8, 0xFF);
+
+        byteBuffer.pushByte(0x1A, Transformation.NONE);
+
+        Expect(byteBuffer.getPayload()).toEqual([ 0xFF, 0x1A ]);
     }
 
 }
