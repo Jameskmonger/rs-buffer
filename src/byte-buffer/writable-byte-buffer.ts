@@ -2,14 +2,16 @@ import { DataOrder, Transformation, transformLsb, applyTransformation, DataSizes
 
 export class WritableByteBuffer {
 
+  private position: number;
   private payload: Array<number>;
 
   constructor () {
+    this.position = 0;
     this.payload = [];
   }
 
   private pushBytes(bytesInBigEndianOrder: Array<number>, orderToPush: Array<number>): void {
-    orderToPush.forEach(i => this.payload.push(bytesInBigEndianOrder[i]));
+    orderToPush.forEach(i => this.payload[this.position++] = bytesInBigEndianOrder[i]);
   }
 
   public pushByte(value: number, transformation: Transformation): void {
@@ -19,7 +21,7 @@ export class WritableByteBuffer {
 
     const transformedByte = applyTransformation(value, transformation); 
 
-    this.payload.push(transformedByte);
+    this.payload[this.position++] = transformedByte;
   }
 
   public pushShort(value: number, order: DataOrder, transformation: Transformation): void {
@@ -126,10 +128,10 @@ export class WritableByteBuffer {
     for (let i = 0; i < value.length; i++) {
       let code = value.charCodeAt(i);
 
-      this.payload.push(code);
+      this.payload[this.position++] = code;
     }
 
-    this.payload.push(0x0A);
+    this.payload[this.position++] = 0x0A;
   }
 
   public bitAccess(): WritableByteBuffer {
