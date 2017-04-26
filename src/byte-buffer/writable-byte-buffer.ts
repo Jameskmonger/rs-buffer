@@ -121,6 +121,9 @@ export class WritableByteBuffer {
     return this;
   }
 
+  // push (1, 1) results in 1000000
+  // then push (7, 1) results in 10000001
+  // read it as string and convert :)
   public pushBits(count: number, value: number): WritableByteBuffer {
     return this;
   }
