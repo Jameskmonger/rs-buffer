@@ -137,12 +137,14 @@ export class WritableByteBuffer {
         this.payload[bytePos] &= ~ BIT_MASK[bitOffset];
         this.payload[bytePos] |= value & BIT_MASK[bitOffset];
       } else {
-        this.payload[bytePos] &= ~ (BIT_MASK[count]<<(bitOffset - count));
-        this.payload[bytePos] |= (value&BIT_MASK[count]) << (bitOffset - count);
+        this.payload[bytePos] &= ~ (BIT_MASK[count] << (bitOffset - count));
+        this.payload[bytePos] |= (value & BIT_MASK[count]) << (bitOffset - count);
       }
 
+      // update position incase they want to go back to byte access
       this.position = ~~((bitPosition + 7) / 8);
 
+      // pass the bit position down so that pushBits can be called again
       return this.curryPushBits(bitPosition);
     };
 

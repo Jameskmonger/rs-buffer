@@ -60,4 +60,14 @@ export class ByteBufferPushBitsTestFixture {
         Expect(byteBuffer.getPayload()).toEqual([ 0xFF, 0x1A, 0xF0, 0x96 ]);
     }
 
+    @TestCase(65535, [ 255, 255 ]) // 1111111111111111
+    @TestCase(38703, [ 151, 47 ]) // 1001011100101111
+    public shouldPushSixteenBits(value: number, expected: number) {
+        const byteBuffer = new WritableByteBuffer();
+
+        byteBuffer.pushBits(16, value);
+
+        Expect(byteBuffer.getPayload()).toEqual(expected);
+    }
+
 }
