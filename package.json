@@ -2,8 +2,9 @@
   "name": "game-packets",
   "version": "0.0.1",
   "description": "Packet system designed for a video game",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
+    "build": "tsc",
     "test": "tsc && alsatian \"./test/**/*.test.js\""
   },
   "repository": {
