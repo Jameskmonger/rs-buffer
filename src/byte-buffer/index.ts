@@ -4,6 +4,7 @@ import { WritableByteBuffer } from "./writable-byte-buffer";
 import * as DataSizes from "./data-sizes";
 import { applyTransformation } from "./apply-transformation";
 import { transformLsb } from "./transform-lsb";
+import { BIT_MASK } from "./bit-mask";
 
 export {
     DataOrder,
@@ -11,5 +12,6 @@ export {
     WritableByteBuffer,
     DataSizes,
     applyTransformation,
-    transformLsb
+    transformLsb,
+    BIT_MASK
 }

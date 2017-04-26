@@ -1,4 +1,4 @@
-import { TestFixture, TestCase, Test, Expect } from "alsatian";
+import { TestFixture, TestCase, Test, Expect, IgnoreTests } from "alsatian";
 
 import { Transformation } from "../../../src/byte-buffer";
 import { WritableByteBuffer } from "../../../src/byte-buffer/writable-byte-buffer";
@@ -18,8 +18,7 @@ export class ByteBufferPushBitsTestFixture {
     public shouldPushOnceCorrectly(value: number, count: number, expected: number) {
         const byteBuffer = new WritableByteBuffer();
 
-        byteBuffer.bitAccess()
-            .pushBits(count, value);
+        byteBuffer.pushBits(count, value);
 
         Expect(byteBuffer.getPayload()).toEqual([ expected ]);
     }
@@ -29,8 +28,7 @@ export class ByteBufferPushBitsTestFixture {
     public shouldPushTwiceCorrectly(firstValue: number, firstCount: number, secondValue: number, secondCount: number, expected: number) {
         const byteBuffer = new WritableByteBuffer();
 
-        byteBuffer.bitAccess()
-            .pushBits(firstCount, firstValue)
+        byteBuffer.pushBits(firstCount, firstValue)
             .pushBits(secondCount, secondValue);
 
         Expect(byteBuffer.getPayload()).toEqual([ expected ]);
@@ -40,12 +38,26 @@ export class ByteBufferPushBitsTestFixture {
     public shouldPushByteDataAfter() {
         const byteBuffer = new WritableByteBuffer();
 
-        byteBuffer.bitAccess()
-            .pushBits(8, 0xFF);
+        byteBuffer.pushBits(8, 0xFF);
 
         byteBuffer.pushByte(0x1A, Transformation.NONE);
 
         Expect(byteBuffer.getPayload()).toEqual([ 0xFF, 0x1A ]);
+    }
+
+    @Test()
+    public shouldResumeBitAccessCorrectly() {
+        const byteBuffer = new WritableByteBuffer();
+
+        byteBuffer.pushBits(8, 0xFF);
+
+        byteBuffer.pushByte(0x1A, Transformation.NONE);
+
+        byteBuffer.pushBits(8, 0xF0);
+
+        byteBuffer.pushByte(0x96, Transformation.NONE);
+
+        Expect(byteBuffer.getPayload()).toEqual([ 0xFF, 0x1A, 0xF0, 0x96 ]);
     }
 
 }

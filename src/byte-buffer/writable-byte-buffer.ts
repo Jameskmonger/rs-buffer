@@ -1,4 +1,8 @@
-import { DataOrder, Transformation, transformLsb, applyTransformation, DataSizes } from "./";
+import { DataOrder, Transformation, transformLsb, applyTransformation, DataSizes, BIT_MASK } from "./";
+
+interface BitPushFunction {
+  pushBits(count: number, value: number): BitPushFunction
+}
 
 export class WritableByteBuffer {
 
@@ -113,15 +117,43 @@ export class WritableByteBuffer {
     }
   }
 
-  // push (1, 1) results in 1000000
-  // then push (7, 1) results in 10000001
-  // read it as string and convert :)
-  public pushBits(count: number, value: number): WritableByteBuffer {
-    return this;
+  // internal curried function to push bits
+  // this prevents us from having to do any setup function at all to get into "bit mode"
+  // curryPushBits(0).pushBits(4, 10).pushBits(4, 12)
+  private curryPushBits(bitPosition: number): BitPushFunction {
+    const pushBits = (count: number, value: number) => {
+      let bytePos = bitPosition >> 3;
+      let bitOffset = 8 - (bitPosition & 7);
+      bitPosition += count;
+      
+      for(; count > bitOffset; bitOffset = 8) {
+        this.payload[bytePos] &= ~ BIT_MASK[bitOffset];
+        this.payload[bytePos++] |= (value >> (count - bitOffset)) & BIT_MASK[bitOffset];
+        
+        count -= bitOffset;
+      }
+      
+      if(count == bitOffset) {
+        this.payload[bytePos] &= ~ BIT_MASK[bitOffset];
+        this.payload[bytePos] |= value & BIT_MASK[bitOffset];
+      } else {
+        this.payload[bytePos] &= ~ (BIT_MASK[count]<<(bitOffset - count));
+        this.payload[bytePos] |= (value&BIT_MASK[count]) << (bitOffset - count);
+      }
+
+      this.position = ~~((bitPosition + 7) / 8);
+
+      return this.curryPushBits(bitPosition);
+    };
+
+    return {
+      pushBits
+    };
   }
 
-  public pushBit(value: number): WritableByteBuffer {
-    return this;
+  // curries the function up so they can do pushBits(c, v).pushBits(c, v)
+  public pushBits(count: number, value: number): BitPushFunction {
+    return this.curryPushBits(this.position * 8).pushBits(count, value);
   }
 
   public pushString(value: string): void {
@@ -132,14 +164,6 @@ export class WritableByteBuffer {
     }
 
     this.payload[this.position++] = 0x0A;
-  }
-
-  public bitAccess(): WritableByteBuffer {
-    return this;
-  }
-
-  public byteAccess(): WritableByteBuffer {
-    return this;
   }
 
   public getPayload(): Array<number> {
