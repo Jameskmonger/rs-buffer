@@ -12,7 +12,7 @@ export class ByteBufferPushTribyteTestFixture {
     const buffer = new WritableByteBuffer();
 
     Expect(
-      () => buffer.pushTribyte(value, DataOrder.BIG_ENDIAN, Transformation.NONE)
+      () => buffer.pushTribyte(value, DataOrder.BIG_ENDIAN)
     ).toThrowError(Error, "ByteBuffer#pushTribyte accepts a value between 0 and 16777215.");
   }
 
@@ -23,7 +23,7 @@ export class ByteBufferPushTribyteTestFixture {
   public shouldPushTribyteInCorrectOrder(value: number, order: DataOrder.BIG_ENDIAN | DataOrder.LITTLE_ENDIAN, expected: Array<number>) {
     const buffer = new WritableByteBuffer();
 
-    buffer.pushTribyte(value, order, Transformation.NONE);
+    buffer.pushTribyte(value, order);
 
     Expect(buffer.getPayload()).toEqual(expected);
   }

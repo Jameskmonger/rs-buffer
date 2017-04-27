@@ -1,6 +1,5 @@
-import { TestFixture, TestCase, Test, Expect, IgnoreTests } from "alsatian";
+import { TestFixture, TestCase, Test, Expect } from "alsatian";
 
-import { Transformation } from "../../../src/byte-buffer";
 import { WritableByteBuffer } from "../../../src/byte-buffer/writable-byte-buffer";
 
 @TestFixture("ByteBuffer#pushBits tests")
@@ -40,7 +39,7 @@ export class ByteBufferPushBitsTestFixture {
 
         byteBuffer.pushBits(8, 0xFF);
 
-        byteBuffer.pushByte(0x1A, Transformation.NONE);
+        byteBuffer.pushByte(0x1A);
 
         Expect(byteBuffer.getPayload()).toEqual([ 0xFF, 0x1A ]);
     }
@@ -51,11 +50,11 @@ export class ByteBufferPushBitsTestFixture {
 
         byteBuffer.pushBits(8, 0xFF);
 
-        byteBuffer.pushByte(0x1A, Transformation.NONE);
+        byteBuffer.pushByte(0x1A);
 
         byteBuffer.pushBits(8, 0xF0);
 
-        byteBuffer.pushByte(0x96, Transformation.NONE);
+        byteBuffer.pushByte(0x96);
 
         Expect(byteBuffer.getPayload()).toEqual([ 0xFF, 0x1A, 0xF0, 0x96 ]);
     }

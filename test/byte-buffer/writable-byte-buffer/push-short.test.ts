@@ -12,7 +12,7 @@ export class ByteBufferPushShortTestFixture {
     const buffer = new WritableByteBuffer();
 
     Expect(
-      () => buffer.pushShort(value, DataOrder.BIG_ENDIAN, Transformation.NONE)
+      () => buffer.pushShort(value, DataOrder.BIG_ENDIAN)
     ).toThrowError(Error, "ByteBuffer#pushShort accepts a value between 0 and 65535.");
   }
 
@@ -23,7 +23,7 @@ export class ByteBufferPushShortTestFixture {
   public shouldPushShortInCorrectOrder(value: number, order: DataOrder.BIG_ENDIAN | DataOrder.LITTLE_ENDIAN, expected: Array<number>) {
     const buffer = new WritableByteBuffer();
 
-    buffer.pushShort(value, order, Transformation.NONE);
+    buffer.pushShort(value, order);
 
     Expect(buffer.getPayload()).toEqual(expected);
   }

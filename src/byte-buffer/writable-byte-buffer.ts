@@ -18,7 +18,7 @@ export class WritableByteBuffer {
     orderToPush.forEach(i => this.payload[this.position++] = bytesInBigEndianOrder[i]);
   }
 
-  public pushByte(value: number, transformation: Transformation): void {
+  public pushByte(value: number, transformation: Transformation = Transformation.NONE): void {
     if (!DataSizes.isUnsigned8BitInt(value)) {
       throw Error(`ByteBuffer#pushByte accepts a value between 0 and ${ DataSizes.UNSIGNED_8_BIT_MAX }.`);
     }
@@ -28,7 +28,7 @@ export class WritableByteBuffer {
     this.payload[this.position++] = transformedByte;
   }
 
-  public pushShort(value: number, order: DataOrder, transformation: Transformation): void {
+  public pushShort(value: number, order: DataOrder, transformation: Transformation = Transformation.NONE): void {
     if (!DataSizes.isUnsigned16BitInt(value)) {
       throw Error(`ByteBuffer#pushShort accepts a value between 0 and ${ DataSizes.UNSIGNED_16_BIT_MAX }.`);
     }
@@ -47,7 +47,7 @@ export class WritableByteBuffer {
     }
   }
 
-  public pushTribyte(value: number, order: DataOrder, transformation: Transformation): void {
+  public pushTribyte(value: number, order: DataOrder, transformation: Transformation = Transformation.NONE): void {
     if (!DataSizes.isUnsigned24BitInt(value)) {
       throw Error(`ByteBuffer#pushTribyte accepts a value between 0 and ${ DataSizes.UNSIGNED_24_BIT_MAX }.`);
     }
@@ -65,7 +65,7 @@ export class WritableByteBuffer {
     }
   }
 
-  public pushInt(value: number, order: DataOrder, mixed: boolean, transformation: Transformation): void {
+  public pushInt(value: number, order: DataOrder, mixed: boolean, transformation: Transformation = Transformation.NONE): void {
     if (!DataSizes.isUnsigned32BitInt(value)) {
       throw Error(`ByteBuffer#pushInt accepts a value between 0 and ${ DataSizes.UNSIGNED_32_BIT_MAX }.`);
     }
@@ -94,7 +94,7 @@ export class WritableByteBuffer {
     }
   }
 
-  public pushLong(high: number, low: number, order: DataOrder, transformation: Transformation): void {
+  public pushLong(high: number, low: number, order: DataOrder, transformation: Transformation = Transformation.NONE): void {
     if (!DataSizes.isUnsigned64BitInt(high, low)) {
       throw Error(`ByteBuffer#pushLong accepts a value between [ 0, 0 ] and [ ${ DataSizes.UNSIGNED_32_BIT_MAX }, ${ DataSizes.UNSIGNED_32_BIT_MAX } ].`);
     }
@@ -168,8 +168,24 @@ export class WritableByteBuffer {
     this.payload[this.position++] = 0x0A;
   }
 
+  public setPosition(position: number): void {
+    this.position = position;
+  }
+
+  public setPositionToEnd(): void {
+
+  }
+
+  public getPosition(): void {
+
+  }
+
   public getPayload(): Array<number> {
     return this.payload;
+  }
+
+  public toBuffer(): Buffer {
+    return Buffer.from(this.payload);
   }
 
 }

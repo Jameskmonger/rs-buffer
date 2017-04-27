@@ -12,7 +12,7 @@ export class ByteBufferPushIntTestFixture {
     const buffer = new WritableByteBuffer();
 
     Expect(
-      () => buffer.pushInt(value, DataOrder.BIG_ENDIAN, false, Transformation.NONE)
+      () => buffer.pushInt(value, DataOrder.BIG_ENDIAN, false)
     ).toThrowError(Error, "ByteBuffer#pushInt accepts a value between 0 and 4294967295.");
   }
 
@@ -27,7 +27,7 @@ export class ByteBufferPushIntTestFixture {
   public shouldPushIntInCorrectOrder(value: number, order: DataOrder, mixed: boolean, expected: Array<number>) {
     const buffer = new WritableByteBuffer();
 
-    buffer.pushInt(value, order, mixed, Transformation.NONE);
+    buffer.pushInt(value, order, mixed);
 
     Expect(buffer.getPayload()).toEqual(expected);
   }

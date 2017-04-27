@@ -12,7 +12,7 @@ export class ByteBufferPushByteTestFixture {
     const buffer = new WritableByteBuffer();
 
     Expect(
-      () => buffer.pushByte(value, Transformation.NONE)
+      () => buffer.pushByte(value)
     ).toThrowError(Error, "ByteBuffer#pushByte accepts a value between 0 and 255.");
   }
 

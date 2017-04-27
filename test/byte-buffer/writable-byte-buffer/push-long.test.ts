@@ -12,7 +12,7 @@ export class ByteBufferPushLongTestFixture {
     const buffer = new WritableByteBuffer();
 
     Expect(
-      () => buffer.pushLong(high, low, DataOrder.BIG_ENDIAN, Transformation.NONE)
+      () => buffer.pushLong(high, low, DataOrder.BIG_ENDIAN)
     ).toThrowError(Error, "ByteBuffer#pushLong accepts a value between [ 0, 0 ] and [ 4294967295, 4294967295 ].");
   }
 
@@ -23,7 +23,7 @@ export class ByteBufferPushLongTestFixture {
   public shouldPushLongInCorrectOrder(high: number, low: number, order: DataOrder.BIG_ENDIAN | DataOrder.LITTLE_ENDIAN, expected: Array<number>) {
     const buffer = new WritableByteBuffer();
 
-    buffer.pushLong(high, low, order, Transformation.NONE);
+    buffer.pushLong(high, low, order);
 
     Expect(buffer.getPayload()).toEqual(expected);
   }
