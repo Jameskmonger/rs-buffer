@@ -176,8 +176,8 @@ export class WritableByteBuffer {
     this.position = this.payload.length;
   }
 
-  public getPosition(): void {
-
+  public getPosition(): number {
+    return this.position;
   }
 
   public getPayload(): Array<number> {
