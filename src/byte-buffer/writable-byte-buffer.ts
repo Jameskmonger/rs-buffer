@@ -173,7 +173,7 @@ export class WritableByteBuffer {
   }
 
   public setPositionToEnd(): void {
-
+    this.position = this.payload.length;
   }
 
   public getPosition(): void {
