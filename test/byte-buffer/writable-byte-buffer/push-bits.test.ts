@@ -61,7 +61,7 @@ export class ByteBufferPushBitsTestFixture {
 
     @TestCase(65535, [ 255, 255 ]) // 1111111111111111
     @TestCase(38703, [ 151, 47 ]) // 1001011100101111
-    public shouldPushSixteenBits(value: number, expected: number) {
+    public shouldPushSixteenBits(value: number, expected: Array<number>) {
         const byteBuffer = new WritableByteBuffer();
 
         byteBuffer.pushBits(16, value);
