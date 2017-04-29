@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "build": "tsc",
-    "test": "tsc && alsatian \"./test/**/*.test.js\""
+    "test": "tsc && alsatian \"test/**/*.test.js\""
   },
   "repository": {
     "type": "git",

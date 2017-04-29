@@ -1,11 +1,6 @@
 import { ISAACGenerator } from "isaac-crypto";
 import { WritableByteBuffer, DataOrder } from "../byte-buffer";
-
-export enum PacketHeaderType {
-    FIXED_LENGTH,
-    VARIABLE_LENGTH_BYTE,
-    VARIABLE_LENGTH_SHORT
-}
+import { PacketHeaderType } from "./";
 
 export class OutboundPacketBuffer extends WritableByteBuffer {
     
@@ -29,9 +24,7 @@ export class OutboundPacketBuffer extends WritableByteBuffer {
         this.pushByte(opcode + this.isaac.getNextResult());
     }
 
-    public openPacket(opcode: number = null, headerType: PacketHeaderType = PacketHeaderType.FIXED_LENGTH): void {
-        this.startPosition = this.getPosition();
-        
+    public openPacket(opcode: number = null, headerType: PacketHeaderType = PacketHeaderType.FIXED_LENGTH): void {        
         if (opcode) {
             this.pushOpcode(opcode);
         }
@@ -51,6 +44,8 @@ export class OutboundPacketBuffer extends WritableByteBuffer {
                 this.pushShort(0, DataOrder.BIG_ENDIAN); // size placeholder
                 break;
         }
+		
+		this.startPosition = this.getPosition();
     }
 
     private closePacket(): void {
@@ -60,15 +55,14 @@ export class OutboundPacketBuffer extends WritableByteBuffer {
 
         const packetSize = this.getPosition() - this.startPosition;
 
-        // go back to the placeholder
-        this.setPosition(this.startPosition);
-
         // do nothing for fixed length packets
         switch (this.headerType) {
             case PacketHeaderType.VARIABLE_LENGTH_BYTE:
+				this.setPosition(this.startPosition - 1);
                 this.pushByte(packetSize); // size placeholder
                 break;
             case PacketHeaderType.VARIABLE_LENGTH_SHORT:
+				this.setPosition(this.startPosition - 2);
                 this.pushShort(packetSize, DataOrder.BIG_ENDIAN); // size placeholder
                 break;
         }

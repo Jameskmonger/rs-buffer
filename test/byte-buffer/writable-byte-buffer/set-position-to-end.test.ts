@@ -1,6 +1,6 @@
 import { TestFixture, TestCase, Test, Expect } from "alsatian";
 
-import { WritableByteBuffer } from "../../../src/byte-buffer/writable-byte-buffer";
+import { WritableByteBuffer } from "../../../src/byte-buffer";
 
 @TestFixture("ByteBuffer#setPositionToEnd tests")
 export class ByteBufferSetPositionToEndTestFixture {

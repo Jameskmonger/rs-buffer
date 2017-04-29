@@ -1,6 +1,6 @@
 import { TestFixture, TestCase, Expect } from "alsatian";
 
-import { WritableByteBuffer } from "../../../src/byte-buffer/writable-byte-buffer";
+import { WritableByteBuffer } from "../../../src/byte-buffer";
 
 const EOL_CHARACTER = 0x0A;
 
