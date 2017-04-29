@@ -1,7 +1,7 @@
 import { ISAACGenerator } from "isaac-crypto";
 import { WritableByteBuffer, DataOrder } from "../byte-buffer";
 
-enum PacketHeaderType {
+export enum PacketHeaderType {
     FIXED_LENGTH,
     VARIABLE_LENGTH_BYTE,
     VARIABLE_LENGTH_SHORT
@@ -10,25 +10,33 @@ enum PacketHeaderType {
 export class OutboundPacketBuffer extends WritableByteBuffer {
     
     private isaac: ISAACGenerator;
-    private opcode: number;
     private headerType: PacketHeaderType;
     private startPosition: number;
 
-    constructor (isaac: ISAACGenerator, opcode: number, headerType: PacketHeaderType = PacketHeaderType.FIXED_LENGTH) {
+    constructor (isaac: ISAACGenerator) {
         super();
 
         this.isaac = isaac;
-        this.opcode = opcode;
-        this.headerType = headerType;
+    }
+
+    public toBuffer(): Buffer {
+        this.closePacket();
+
+        return super.toBuffer();
     }
 
     private pushOpcode(opcode): void {
         this.pushByte(opcode + this.isaac.getNextResult());
     }
 
-    private openPacket(): void {
+    public openPacket(opcode: number = null, headerType: PacketHeaderType = PacketHeaderType.FIXED_LENGTH): void {
         this.startPosition = this.getPosition();
-        this.pushOpcode(this.opcode);
+        
+        if (opcode) {
+            this.pushOpcode(opcode);
+        }
+
+        this.headerType = headerType;
 
         if (this.headerType === PacketHeaderType.FIXED_LENGTH) {
             return;

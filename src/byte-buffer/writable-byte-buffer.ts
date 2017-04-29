@@ -4,6 +4,8 @@ interface BitPushFunction {
   pushBits(count: number, value: number): BitPushFunction
 }
 
+const unsign = v => (v >> 8 << 8) ^ v;
+
 export class WritableByteBuffer {
 
   private position: number;
@@ -15,24 +17,20 @@ export class WritableByteBuffer {
   }
 
   private pushBytes(bytesInBigEndianOrder: Array<number>, orderToPush: Array<number>): void {
-    orderToPush.forEach(i => this.payload[this.position++] = bytesInBigEndianOrder[i]);
+    orderToPush.forEach(i => this.pushSingleByte(bytesInBigEndianOrder[i]));
+  }
+  
+  private pushSingleByte(value: number): void {
+    this.payload[this.position++] = unsign(value);
   }
 
   public pushByte(value: number, transformation: Transformation = Transformation.NONE): void {
-    if (!DataSizes.isUnsigned8BitInt(value)) {
-      throw Error(`ByteBuffer#pushByte accepts a value between 0 and ${ DataSizes.UNSIGNED_8_BIT_MAX }.`);
-    }
-
     const transformedByte = applyTransformation(value, transformation); 
 
-    this.payload[this.position++] = transformedByte;
+    this.pushSingleByte(transformedByte);
   }
 
   public pushShort(value: number, order: DataOrder, transformation: Transformation = Transformation.NONE): void {
-    if (!DataSizes.isUnsigned16BitInt(value)) {
-      throw Error(`ByteBuffer#pushShort accepts a value between 0 and ${ DataSizes.UNSIGNED_16_BIT_MAX }.`);
-    }
-
     // apply all transformations and store in big endian order
     // as it makes the code a bit cleaner when actually pushing them to payload
     const bytesToPushBigEndian = transformLsb([
@@ -48,10 +46,6 @@ export class WritableByteBuffer {
   }
 
   public pushTribyte(value: number, order: DataOrder, transformation: Transformation = Transformation.NONE): void {
-    if (!DataSizes.isUnsigned24BitInt(value)) {
-      throw Error(`ByteBuffer#pushTribyte accepts a value between 0 and ${ DataSizes.UNSIGNED_24_BIT_MAX }.`);
-    }
-
     const bytesToPushBigEndian = transformLsb([
       (value >> 16) & 0xFF,
       (value >> 8) & 0xFF,
@@ -66,10 +60,6 @@ export class WritableByteBuffer {
   }
 
   public pushInt(value: number, order: DataOrder, mixed: boolean, transformation: Transformation = Transformation.NONE): void {
-    if (!DataSizes.isUnsigned32BitInt(value)) {
-      throw Error(`ByteBuffer#pushInt accepts a value between 0 and ${ DataSizes.UNSIGNED_32_BIT_MAX }.`);
-    }
-
     // apply all transformations and store in big endian order
     // as it makes the code a bit cleaner when actually pushing them to payload
     const bytesToPushBigEndian = transformLsb([
@@ -95,10 +85,6 @@ export class WritableByteBuffer {
   }
 
   public pushLong(high: number, low: number, order: DataOrder, transformation: Transformation = Transformation.NONE): void {
-    if (!DataSizes.isUnsigned64BitInt(high, low)) {
-      throw Error(`ByteBuffer#pushLong accepts a value between [ 0, 0 ] and [ ${ DataSizes.UNSIGNED_32_BIT_MAX }, ${ DataSizes.UNSIGNED_32_BIT_MAX } ].`);
-    }
-
     const bytesToPushBigEndian = transformLsb([
       (high >> 24) & 0xFF,
       (high >> 16) & 0xFF,
