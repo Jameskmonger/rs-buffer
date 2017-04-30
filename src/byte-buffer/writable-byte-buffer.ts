@@ -1,10 +1,16 @@
-import { DataOrder, Transformation, transformLsb, applyTransformation, DataSizes, BIT_MASK } from "./";
+import { 
+  getUnsignedByte,
+  DataOrder, 
+  Transformation, 
+  transformLsb, 
+  applyTransformation, 
+  DataSizes, 
+  BIT_MASK
+} from "./";
 
 interface BitPushFunction {
   pushBits(count: number, value: number): BitPushFunction
 }
-
-const unsign = v => (v >> 8 << 8) ^ v;
 
 export class WritableByteBuffer {
 
@@ -21,7 +27,7 @@ export class WritableByteBuffer {
   }
   
   private pushSingleByte(value: number): void {
-    this.payload[this.position++] = unsign(value);
+    this.payload[this.position++] = getUnsignedByte(value);
   }
 
   public pushByte(value: number, transformation: Transformation = Transformation.NONE): void {
