@@ -35,4 +35,18 @@ export class ReadableByteBuffer {
         return val;
     }
 
+    public readTribyte(signed: boolean): number {
+        const val = (
+            (this.payload[this.position++] << 16) +
+            (this.payload[this.position++] << 8) +
+            this.payload[this.position++]
+        );
+
+        if(signed && val > 0x7FFFFF) {
+            return val - 0x1000000;
+        }
+
+        return val;
+    }
+
 }
