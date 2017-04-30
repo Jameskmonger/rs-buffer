@@ -71,4 +71,20 @@ export class ReadableByteBuffer {
         return [ high, low ];
     }
 
+    public readString(): string {
+        let out = "";
+
+        while (true) {
+            const nextByte = this.readByte(false);
+
+            if (nextByte === 0x0A) {
+                break;
+            }
+
+            out += String.fromCharCode(nextByte);
+        }
+
+        return out;
+    }
+
 }
