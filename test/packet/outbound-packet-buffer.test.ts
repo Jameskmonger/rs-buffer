@@ -1,6 +1,6 @@
 import { TestFixture, TestCase, Test, Expect } from "alsatian";
 
-import { OutboundPacketBuffer, PacketHeaderType } from "../../src/packet";
+import { OutboundPacketBuffer, PacketLengthType } from "../../src/packet";
 
 const buildFakeISAAC = (returnValue: number) => {
     return {
@@ -59,7 +59,7 @@ export class OutboundPacketBufferTestFixture {
 
         const packet = new OutboundPacketBuffer(isaac);
 
-        packet.openPacket(10, PacketHeaderType.VARIABLE_LENGTH_BYTE); // opcode 10
+        packet.openPacket(10, PacketLengthType.VARIABLE_LENGTH_BYTE); // opcode 10
 
         packet.pushByte(first);
         packet.pushByte(second);
@@ -79,7 +79,7 @@ export class OutboundPacketBufferTestFixture {
 
         const packet = new OutboundPacketBuffer(isaac);
 
-        packet.openPacket(10, PacketHeaderType.VARIABLE_LENGTH_SHORT); // opcode 10
+        packet.openPacket(10, PacketLengthType.VARIABLE_LENGTH_SHORT); // opcode 10
 
         packet.pushByte(first);
         packet.pushByte(second);

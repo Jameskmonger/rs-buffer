@@ -1,7 +1,13 @@
-import { PacketHeaderType } from "./packet-header-type";
+import { PacketLengthType } from "./packet-length-type";
+import { OutboundPacket } from "./outbound-packet";
 import { OutboundPacketBuffer } from "./outbound-packet-buffer";
+import { OutboundPacketInformation } from "./outbound-packet-information";
+import { OutboundPacketMetadata } from "./outbound-packet-metadata";
 
 export {
-    PacketHeaderType,
-    OutboundPacketBuffer
+    PacketLengthType,
+    OutboundPacket,
+    OutboundPacketBuffer,
+    OutboundPacketInformation,
+    OutboundPacketMetadata
 };
