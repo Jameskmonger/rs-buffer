@@ -8,7 +8,7 @@ import {
   BIT_MASK
 } from "./";
 
-interface BitPushFunction {
+export interface BitPushFunction {
   pushBits(count: number, value: number): BitPushFunction
 }
 

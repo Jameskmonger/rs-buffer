@@ -1,3 +1,4 @@
 node_modules
 *.js
 .vs
+*.d.ts

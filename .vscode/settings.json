@@ -3,6 +3,8 @@
         "src/**/*.js": true,
         "test/**/*.js": true,
         "node_modules": true,
-        ".vs": true
+        ".vs": true,
+        "src/**/*.d.ts": true,
+        "test/**/*.d.ts": true
     }
 }

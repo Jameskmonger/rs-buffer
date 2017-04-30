@@ -2,7 +2,8 @@
   "compilerOptions": {
     "target": "es5",
     "moduleResolution": "node",
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "declaration": true
   },
   "include": [
     "./**/*.ts"
