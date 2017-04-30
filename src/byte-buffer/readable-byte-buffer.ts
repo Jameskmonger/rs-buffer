@@ -12,14 +12,27 @@ export class ReadableByteBuffer {
         this.payload = buffer.slice(0);
     }
 
-    public readByte(signed: boolean = false) {
+    public readByte(signed: boolean): number {
         const val = this.payload[this.position++];
 
-        if (signed) {
-            return val;
+        if (signed && val > 0x7F) {
+            return val - 0x100;
         }
 
-        return getUnsignedByte(val);
+        return val;
+    }
+
+    public readShort(signed: boolean): number {
+        const val = (
+            (this.payload[this.position++] << 8) +
+            this.payload[this.position++]
+        );
+
+        if(signed && val > 0x7FFF) {
+            return val - 0x10000;
+        }
+
+        return val;
     }
 
 }
