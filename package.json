@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "description": "Packet system designed for a video game",
   "main": "src/index.js",
+  "typings": "src/index.d.ts",
   "scripts": {
+    "prepublish": "npm run build && npm test",
     "build": "tsc",
     "test": "tsc && alsatian \"test/**/*.test.js\""
   },
