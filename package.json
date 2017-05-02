@@ -1,6 +1,6 @@
 {
   "name": "game-packets",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Packet system designed for a video game",
   "main": "src/index.js",
   "typings": "src/index.d.ts",
