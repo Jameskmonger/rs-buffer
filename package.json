@@ -9,6 +9,10 @@
     "build": "tsc",
     "test": "tsc && alsatian \"test/**/*.test.js\""
   },
+  "files": [
+    "src/**/*.js",
+    "src/**/*.d.ts"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Jameskmonger/game-packets.git"
