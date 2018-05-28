@@ -5,15 +5,25 @@ import {
 export class ReadableByteBuffer {
 
     private position: number;
-    private payload: Array<number>;
+    private buf: Buffer;
 
-    constructor(buffer: Array<number>) {
+    constructor(buffer: Buffer) {
         this.position = 0;
-        this.payload = buffer.slice(0);
+        this.buf = buffer;
+    }
+
+    public static fromArray(array: Array<number>): ReadableByteBuffer {
+        const buf = Buffer.from(array);
+
+        return new ReadableByteBuffer(buf);
+    }
+    
+    private getNextFromBuffer() {
+        return this.buf.readUInt8(this.position++);
     }
 
     public readByte(signed: boolean): number {
-        const val = this.payload[this.position++] >>> 0;
+        const val = this.getNextFromBuffer() >>> 0;
 
         if (signed && val > 0x7F) {
             return val - 0x100;
@@ -24,8 +34,8 @@ export class ReadableByteBuffer {
 
     public readShort(signed: boolean): number {
         const val = (
-            (this.payload[this.position++] << 8 >>> 0) +
-            this.payload[this.position++] >>> 0
+            (this.getNextFromBuffer() << 8 >>> 0) +
+            this.getNextFromBuffer() >>> 0
         );
 
         if(signed && val > 0x7FFF) {
@@ -37,9 +47,9 @@ export class ReadableByteBuffer {
 
     public readTribyte(signed: boolean): number {
         const val = (
-            (this.payload[this.position++] << 16 >>> 0) +
-            (this.payload[this.position++] << 8 >>> 0) +
-            this.payload[this.position++] >>> 0
+            (this.getNextFromBuffer() << 16 >>> 0) +
+            (this.getNextFromBuffer() << 8 >>> 0) +
+            this.getNextFromBuffer() >>> 0
         );
 
         if(signed && val > 0x7FFFFF) {
@@ -51,10 +61,10 @@ export class ReadableByteBuffer {
 
     public readInt(signed: boolean): number {
         const val = (
-            (this.payload[this.position++] << 24 >>> 0) +
-            (this.payload[this.position++] << 16 >>> 0) +
-            (this.payload[this.position++] << 8 >>> 0) +
-            this.payload[this.position++] >>> 0
+            (this.getNextFromBuffer() << 24 >>> 0) +
+            (this.getNextFromBuffer() << 16 >>> 0) +
+            (this.getNextFromBuffer() << 8 >>> 0) +
+            this.getNextFromBuffer() >>> 0
         );
 
         if(signed && val > 0x7FFFFFFF) {

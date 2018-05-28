@@ -1,7 +1,7 @@
 {
-  "name": "game-packets",
-  "version": "0.0.4",
-  "description": "Packet system designed for a video game",
+  "name": "rs-buffer",
+  "version": "0.1.0",
+  "description": "Readable/writable buffer designed for a video game",
   "main": "build/index.js",
   "typings": "build/index.d.ts",
   "scripts": {
@@ -15,14 +15,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Jameskmonger/game-packets.git"
+    "url": "git+https://github.com/Jameskmonger/rs-buffer.git"
   },
   "author": "James Monger <jameskmonger@hotmail.co.uk> (http://jamesmonger.com/)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Jameskmonger/game-packets/issues"
+    "url": "https://github.com/Jameskmonger/rs-buffer/issues"
   },
-  "homepage": "https://github.com/Jameskmonger/game-packets#readme",
+  "homepage": "https://github.com/Jameskmonger/rs-buffer#readme",
   "devDependencies": {
     "@types/node": "^8.10.17",
     "alsatian": "^1.3.1",
