@@ -1,6 +1,6 @@
-import { TestFixture, TestCase, Expect, FocusTest } from "alsatian";
+import { TestFixture, TestCase, Expect } from "alsatian";
 
-import { ReadableByteBuffer, Transformation } from "../../src/";
+import { ReadableByteBuffer } from "../../src/";
 
 @TestFixture("ByteBuffer#readString tests")
 export class ByteBufferReadStringTestFixture {
@@ -14,7 +14,7 @@ export class ByteBufferReadStringTestFixture {
         0x0A
     ], "James - and symbols!")
     public shouldReadSingleString(input: Array<number>, expected: string) {
-        const buffer = new ReadableByteBuffer(input);
+        const buffer = ReadableByteBuffer.fromArray(input);
         
         const output = buffer.readString();
 
@@ -35,7 +35,7 @@ export class ByteBufferReadStringTestFixture {
         0x72, 0x21, 0x0A
     ], [ "wag1 bro", "It is I - Bender!" ])
     public shouldReadTwoStrings(input: Array<number>, expected: Array<string>) {
-        const buffer = new ReadableByteBuffer(input);
+        const buffer = ReadableByteBuffer.fromArray(input);
         
         const output = [
             buffer.readString(),
