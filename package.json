@@ -2,8 +2,8 @@
   "name": "game-packets",
   "version": "0.0.4",
   "description": "Packet system designed for a video game",
-  "main": "src/index.js",
-  "typings": "src/index.d.ts",
+  "main": "build/index.js",
+  "typings": "build/index.d.ts",
   "scripts": {
     "prepublishOnly": "npm run build && npm test",
     "build": "rimraf build && tsc -p src",
@@ -11,8 +11,7 @@
     "test": "npm run build-test && alsatian \"build-test/test/**/*.test.js\""
   },
   "files": [
-    "src/**/*.js",
-    "src/**/*.d.ts"
+    "build"
   ],
   "repository": {
     "type": "git",

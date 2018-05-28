@@ -1,6 +1,6 @@
 import { TestFixture, TestCase, Expect, FocusTest } from "alsatian";
 
-import { ReadableByteBuffer, Transformation } from "../../../src/byte-buffer";
+import { ReadableByteBuffer, Transformation } from "../../src/";
 
 @TestFixture("ByteBuffer#readInt tests")
 export class ByteBufferReadIntTestFixture {
