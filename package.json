@@ -29,6 +29,8 @@
     "typescript": "^2.2.2"
   },
   "dependencies": {
-    "isaac-crypto": "^2.0.4"
+    "@types/reflect-metadata": "^0.1.0",
+    "isaac-crypto": "^2.0.4",
+    "reflect-metadata": "^0.1.12"
   }
 }

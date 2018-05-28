@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { ISAACGenerator } from "isaac-crypto";
 import { WritableByteBuffer } from "../byte-buffer";
 import { OutboundPacket, OutboundPacketBuffer, OutboundPacketMetadata } from "./";

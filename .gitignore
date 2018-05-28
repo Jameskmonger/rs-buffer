@@ -1,4 +1,4 @@
 node_modules
-*.js
+build
+build-test
 .vs
-*.d.ts

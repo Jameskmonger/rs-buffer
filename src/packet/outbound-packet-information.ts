@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { PacketLengthType, OutboundPacketMetadata } from "./";
 
 export function OutboundPacketInformation(opcode: number, lengthType: PacketLengthType) {
