@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "typings": "src/index.d.ts",
   "scripts": {
-    "prepublish": "npm run build && npm test",
+    "prepublishOnly": "npm run build && npm test",
     "build": "tsc",
     "test": "tsc && alsatian \"test/**/*.test.js\""
   },
