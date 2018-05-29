@@ -15,11 +15,11 @@ export interface BitPushFunction {
 export class WritableByteBuffer {
 
   private position: number;
-  private payload: Array<number>;
+  private buf: Buffer;
 
-  constructor () {
+  constructor (size: number = 16) {
     this.position = 0;
-    this.payload = [];
+    this.buf = Buffer.alloc(size);
   }
 
   private pushBytes(bytesInBigEndianOrder: Array<number>, orderToPush: Array<number>): void {
@@ -27,7 +27,9 @@ export class WritableByteBuffer {
   }
   
   private pushSingleByte(value: number): void {
-    this.payload[this.position++] = getUnsignedByte(value);
+    const byteValue = getUnsignedByte(value);
+
+    this.buf.writeUInt8(byteValue, this.position++);
   }
 
   public pushByte(value: number, transformation: Transformation = Transformation.NONE): void {
@@ -119,18 +121,18 @@ export class WritableByteBuffer {
       bitPosition += count;
       
       for(; count > bitOffset; bitOffset = 8) {
-        this.payload[bytePos] &= ~ BIT_MASK[bitOffset];
-        this.payload[bytePos++] |= (value >> (count - bitOffset)) & BIT_MASK[bitOffset];
+        this.buf[bytePos] &= ~ BIT_MASK[bitOffset];
+        this.buf[bytePos++] |= (value >> (count - bitOffset)) & BIT_MASK[bitOffset];
         
         count -= bitOffset;
       }
       
       if(count == bitOffset) {
-        this.payload[bytePos] &= ~ BIT_MASK[bitOffset];
-        this.payload[bytePos] |= value & BIT_MASK[bitOffset];
+        this.buf[bytePos] &= ~ BIT_MASK[bitOffset];
+        this.buf[bytePos] |= value & BIT_MASK[bitOffset];
       } else {
-        this.payload[bytePos] &= ~ (BIT_MASK[count] << (bitOffset - count));
-        this.payload[bytePos] |= (value & BIT_MASK[count]) << (bitOffset - count);
+        this.buf[bytePos] &= ~ (BIT_MASK[count] << (bitOffset - count));
+        this.buf[bytePos] |= (value & BIT_MASK[count]) << (bitOffset - count);
       }
 
       // update position incase they want to go back to byte access
@@ -154,10 +156,10 @@ export class WritableByteBuffer {
     for (let i = 0; i < value.length; i++) {
       let code = value.charCodeAt(i);
 
-      this.payload[this.position++] = code;
+      this.pushSingleByte(code);
     }
 
-    this.payload[this.position++] = 0x0A;
+    this.pushSingleByte(0x0A);
   }
 
   public setPosition(position: number): void {
@@ -165,7 +167,7 @@ export class WritableByteBuffer {
   }
 
   public setPositionToEnd(): void {
-    this.position = this.payload.length;
+    this.position = this.buf.length;
   }
 
   public getPosition(): number {
@@ -173,11 +175,15 @@ export class WritableByteBuffer {
   }
 
   public getPayload(): Array<number> {
-    return this.payload;
+    return [];
+  }
+
+  public get buffer(): Buffer {
+    return this.buf;
   }
 
   public toBuffer(): Buffer {
-    return Buffer.from(this.payload);
+    return this.buf;
   }
 
 }
