@@ -167,7 +167,7 @@ export class WritableByteBuffer {
   }
 
   public setPositionToEnd(): void {
-    this.position = this.buf.length;
+    this.position = this.buf.length - 1;
   }
 
   public getPosition(): number {
@@ -179,10 +179,6 @@ export class WritableByteBuffer {
   }
 
   public get buffer(): Buffer {
-    return this.buf;
-  }
-
-  public toBuffer(): Buffer {
     return this.buf;
   }
 

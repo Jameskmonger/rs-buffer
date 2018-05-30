@@ -1,4 +1,5 @@
-import { TestFixture, TestCase, Test, Expect } from "alsatian";
+import { TestFixture, Test } from "alsatian";
+import { ExpectBuffersToBeEqual } from "../expect";
 
 import { WritableByteBuffer } from "../../src/";
 
@@ -7,7 +8,7 @@ export class ByteBufferSetPositionToEndTestFixture {
 
     @Test()
     public shouldSetPositionToEnd() {
-        const byteBuffer = new WritableByteBuffer();
+        const byteBuffer = new WritableByteBuffer(3);
 
         byteBuffer.pushByte(0xFF);
         byteBuffer.pushByte(0xFF);
@@ -20,7 +21,7 @@ export class ByteBufferSetPositionToEndTestFixture {
 
         byteBuffer.pushByte(0xAA);
 
-        Expect(byteBuffer.getPayload()).toEqual([ 0x00, 0xFF, 0xAA ]);
+        ExpectBuffersToBeEqual(byteBuffer.buffer, Buffer.from([ 0x00, 0xFF, 0xAA ]));
     }
 
 }

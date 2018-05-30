@@ -1,4 +1,5 @@
-import { TestFixture, TestCase, Expect } from "alsatian";
+import { TestFixture, TestCase } from "alsatian";
+import { ExpectBuffersToBeEqual } from "../expect";
 
 import { WritableByteBuffer, DataOrder, Transformation } from "../../src/";
 
@@ -10,11 +11,11 @@ export class ByteBufferPushLongTestFixture {
   @TestCase(0x01234567, 0x89ABCDEF, DataOrder.LITTLE_ENDIAN, [ 0xEF, 0xCD, 0xAB, 0x89, 0x67, 0x45, 0x23, 0x01 ])
   @TestCase(0xFFFFFFFF, 0xFFFFFFFF, DataOrder.LITTLE_ENDIAN, [ 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF ])
   public shouldPushLongInCorrectOrder(high: number, low: number, order: DataOrder.BIG_ENDIAN | DataOrder.LITTLE_ENDIAN, expected: Array<number>) {
-    const buffer = new WritableByteBuffer();
+    const byteBuffer = new WritableByteBuffer(8);
 
-    buffer.pushLong(high, low, order);
+    byteBuffer.pushLong(high, low, order);
 
-    Expect(buffer.getPayload()).toEqual(expected);
+    ExpectBuffersToBeEqual(byteBuffer.buffer, Buffer.from(expected));
   }
 
   @TestCase(0x01234567, 0x89ABCDEF, Transformation.ADD, DataOrder.BIG_ENDIAN, [ 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0x6F ])
@@ -24,21 +25,21 @@ export class ByteBufferPushLongTestFixture {
   @TestCase(0x01234567, 0x89ABCDEF, Transformation.NEGATE, DataOrder.BIG_ENDIAN, [ 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0x11 ])
   @TestCase(0x01234567, 0x89ABCDEF, Transformation.NEGATE, DataOrder.LITTLE_ENDIAN, [ 0x11, 0xCD, 0xAB, 0x89, 0x67, 0x45, 0x23, 0x01 ])
   public shouldApplyTransformationToLSB(high: number, low: number, transformation: Transformation, order: DataOrder.BIG_ENDIAN | DataOrder.LITTLE_ENDIAN, expected: Array<number>) {
-    const buffer = new WritableByteBuffer();
+    const byteBuffer = new WritableByteBuffer(8);
 
-    buffer.pushLong(high, low, order, transformation);
+    byteBuffer.pushLong(high, low, order, transformation);
 
-    Expect(buffer.getPayload()).toEqual(expected);
+    ExpectBuffersToBeEqual(byteBuffer.buffer, Buffer.from(expected));
   }
 
   @TestCase(-0x12345678, -0xABCDEF01, [ 0xED, 0xCB, 0xA9, 0x88, 0x54, 0x32, 0x10, 0xFF ])
   @TestCase(-0xF0F0ECAB, -0x17FE19A0, [ 0x0F, 0x0F, 0x13, 0x55, 0xE8, 0x01, 0xE6, 0x60 ])
   public shouldPushNegativeLongCorrectly(high: number, low: number, expected: Array<string>) {
-    const buffer = new WritableByteBuffer();
+    const byteBuffer = new WritableByteBuffer(8);
 
-    buffer.pushLong(high, low, DataOrder.BIG_ENDIAN);
+    byteBuffer.pushLong(high, low, DataOrder.BIG_ENDIAN);
 
-    Expect(buffer.getPayload()).toEqual(expected);
+    ExpectBuffersToBeEqual(byteBuffer.buffer, Buffer.from(expected));
   }
 
 }

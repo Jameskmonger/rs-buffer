@@ -1,9 +1,8 @@
-import { TestFixture, TestCase, Test, Expect, FocusTests } from "alsatian";
+import { TestFixture, TestCase, Test } from "alsatian";
 import { ExpectBuffersToBeEqual } from "../expect";
 
 import { WritableByteBuffer } from "../../src/";
 
-@FocusTests
 @TestFixture("ByteBuffer#pushBits tests")
 export class ByteBufferPushBitsTestFixture {
 
@@ -40,7 +39,6 @@ export class ByteBufferPushBitsTestFixture {
         const byteBuffer = new WritableByteBuffer(2);
 
         byteBuffer.pushBits(8, 0xFF);
-
         byteBuffer.pushByte(0x1A);
 
         ExpectBuffersToBeEqual(byteBuffer.buffer, Buffer.from([ 0xFF, 0x1A ]));
@@ -51,11 +49,8 @@ export class ByteBufferPushBitsTestFixture {
         const byteBuffer = new WritableByteBuffer(4);
 
         byteBuffer.pushBits(8, 0xFF);
-
         byteBuffer.pushByte(0x1A);
-
         byteBuffer.pushBits(8, 0xF0);
-
         byteBuffer.pushByte(0x96);
 
         ExpectBuffersToBeEqual(byteBuffer.buffer, Buffer.from([ 0xFF, 0x1A, 0xF0, 0x96 ]));

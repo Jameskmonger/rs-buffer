@@ -1,4 +1,5 @@
-import { TestFixture, TestCase, Test, Expect } from "alsatian";
+import { TestFixture, TestCase } from "alsatian";
+import { ExpectBuffersToBeEqual } from "../expect";
 
 import { WritableByteBuffer } from "../../src/";
 
@@ -8,7 +9,7 @@ export class ByteBufferSetPositionTestFixture {
     @TestCase([ 0xFF, 0xFF, 0xFF ], 2, [ 0xFF, 0xFF, 0x00 ])
     @TestCase([ 0xFF, 0xFF ], 0, [ 0x00, 0xFF ])
     public shouldSetPositionForOneByte(initial: Array<number>, position: number, expected: Array<number>) {
-        const byteBuffer = new WritableByteBuffer();
+        const byteBuffer = new WritableByteBuffer(expected.length);
 
         initial.forEach(i => byteBuffer.pushByte(i));
 
@@ -16,13 +17,13 @@ export class ByteBufferSetPositionTestFixture {
 
         byteBuffer.pushByte(0x00);
 
-        Expect(byteBuffer.getPayload()).toEqual(expected);
+        ExpectBuffersToBeEqual(byteBuffer.buffer, Buffer.from(expected));
     }
 
     @TestCase([ 0xFF, 0xFF, 0xFF ], 2, [ 0xFF, 0xFF, 0x00, 0x00 ])
     @TestCase([ 0xFF, 0xFF ], 0, [ 0x00, 0x00 ])
     public shouldSetPositionForTwoBytes(initial: Array<number>, position: number, expected: Array<number>) {
-        const byteBuffer = new WritableByteBuffer();
+        const byteBuffer = new WritableByteBuffer(expected.length);
 
         initial.forEach(i => byteBuffer.pushByte(i));
 
@@ -31,7 +32,7 @@ export class ByteBufferSetPositionTestFixture {
         byteBuffer.pushByte(0x00);
         byteBuffer.pushByte(0x00);
 
-        Expect(byteBuffer.getPayload()).toEqual(expected);
+        ExpectBuffersToBeEqual(byteBuffer.buffer, Buffer.from(expected));
     }
 
 }
