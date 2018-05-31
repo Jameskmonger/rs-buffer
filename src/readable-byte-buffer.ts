@@ -1,7 +1,3 @@
-import {
-    getUnsignedByte
-} from "./";
-
 export class ReadableByteBuffer {
 
     private position: number;

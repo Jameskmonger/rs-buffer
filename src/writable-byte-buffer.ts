@@ -1,12 +1,10 @@
-import { 
-  getUnsignedByte,
-  DataOrder, 
-  Transformation, 
-  transformLsb, 
-  applyTransformation, 
-  DataSizes, 
-  BIT_MASK
-} from "./";
+import { applyTransformation } from "./util/apply-transformation";
+import { BIT_MASK } from "./util/bit-mask";
+import { getUnsignedByte } from "./util/get-unsigned-byte";
+import { transformLsb } from "./util/transform-lsb";
+
+import { DataOrder } from "./data-order";
+import { Transformation } from "./transformation";
 
 export interface BitPushFunction {
   pushBits(count: number, value: number): BitPushFunction

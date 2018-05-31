@@ -1,4 +1,5 @@
-import { applyTransformation, Transformation } from "./";
+import { applyTransformation } from "./apply-transformation";
+import { Transformation } from "../transformation";
 
 const transformLsb = (bytes: Array<number>, transformation: Transformation) => {
   const lsbIndex = bytes.length - 1;
