@@ -177,10 +177,6 @@ export class WritableByteBuffer {
     return this.position;
   }
 
-  public getPayload(): Array<number> {
-    return [];
-  }
-
   public get buffer(): Buffer {
     return this.buf;
   }
