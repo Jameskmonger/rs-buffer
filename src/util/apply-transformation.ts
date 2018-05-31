@@ -1,4 +1,4 @@
-import { Transformation } from "./";
+import { Transformation } from "../transformation";
 
 const applyTransformation = (byte: number, transformation: Transformation) => {
   if (transformation === Transformation.ADD) {
