@@ -18,7 +18,7 @@ export class ReadableByteBuffer {
         return this.buf.readUInt8(this.position++);
     }
 
-    public readByte(signed: boolean): number {
+    public readByte(signed: boolean = false): number {
         const val = this.getNextFromBuffer() >>> 0;
 
         if (signed && val > 0x7F) {
@@ -28,7 +28,7 @@ export class ReadableByteBuffer {
         return val;
     }
 
-    public readShort(signed: boolean): number {
+    public readShort(signed: boolean = false): number {
         const val = (
             (this.getNextFromBuffer() << 8 >>> 0) +
             this.getNextFromBuffer() >>> 0
@@ -41,7 +41,7 @@ export class ReadableByteBuffer {
         return val;
     }
 
-    public readTribyte(signed: boolean): number {
+    public readTribyte(signed: boolean = false): number {
         const val = (
             (this.getNextFromBuffer() << 16 >>> 0) +
             (this.getNextFromBuffer() << 8 >>> 0) +
@@ -55,7 +55,7 @@ export class ReadableByteBuffer {
         return val;
     }
 
-    public readInt(signed: boolean): number {
+    public readInt(signed: boolean = false): number {
         const val = (
             (this.getNextFromBuffer() << 24 >>> 0) +
             (this.getNextFromBuffer() << 16 >>> 0) +
@@ -70,7 +70,7 @@ export class ReadableByteBuffer {
         return val;
     }
 
-    public readLong(signed: boolean): [ number, number ] {
+    public readLong(signed: boolean = false): [ number, number ] {
         const high = this.readInt(signed);
         const low = this.readInt(signed);
 
