@@ -46,11 +46,12 @@ export class WritableByteBuffer {
       value & 0xFF
     ], transformation);
 
-    if (order === DataOrder.BIG_ENDIAN) {
-      this.pushBytes(bytesToPushBigEndian, [ 0, 1 ]);
-    } else if (order === DataOrder.LITTLE_ENDIAN) {
-      this.pushBytes(bytesToPushBigEndian, [ 1, 0 ]);
-    }
+    const byteOrder =
+      (order === DataOrder.BIG_ENDIAN)
+      ? [ 0, 1 ]
+      : [ 1, 0 ];
+      
+    this.pushBytes(bytesToPushBigEndian, byteOrder);
   }
 
   public pushTribyte(value: number, order: DataOrder, transformation: Transformation = Transformation.NONE): void {
@@ -60,11 +61,12 @@ export class WritableByteBuffer {
       value & 0xFF
     ], transformation);
 
-    if (order === DataOrder.BIG_ENDIAN) {
-      this.pushBytes(bytesToPushBigEndian, [ 0, 1, 2 ]);
-    } else if (order === DataOrder.LITTLE_ENDIAN) {
-      this.pushBytes(bytesToPushBigEndian, [ 2, 1, 0 ]);
-    }
+    const byteOrder =
+      (order === DataOrder.BIG_ENDIAN)
+      ? [ 0, 1, 2 ]
+      : [ 2, 1, 0 ];
+      
+    this.pushBytes(bytesToPushBigEndian, byteOrder);
   }
 
   public pushInt(value: number, order: DataOrder, mixed: boolean, transformation: Transformation = Transformation.NONE): void {
@@ -104,11 +106,12 @@ export class WritableByteBuffer {
       low & 0xFF
     ], transformation);
 
-    if (order === DataOrder.BIG_ENDIAN) {
-      this.pushBytes(bytesToPushBigEndian, [ 0, 1, 2, 3, 4, 5, 6, 7 ]);
-    } else if (order === DataOrder.LITTLE_ENDIAN) {
-      this.pushBytes(bytesToPushBigEndian, [ 7, 6, 5, 4, 3, 2, 1, 0 ]);
-    }
+    const byteOrder =
+      (order === DataOrder.BIG_ENDIAN)
+      ? [ 0, 1, 2, 3, 4, 5, 6, 7 ]
+      : [ 7, 6, 5, 4, 3, 2, 1, 0 ];
+
+    this.pushBytes(bytesToPushBigEndian, byteOrder);
   }
 
   // internal curried function to push bits
