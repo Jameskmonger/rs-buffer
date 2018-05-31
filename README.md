@@ -1,5 +1,54 @@
 # rs-buffer
 
+Readable/writable byte buffer designed for a video game
+
+## Warning!
+
+This is currently incomplete! There are two main things missing:
+
+1. Reading in different orders
+2. Reading with transformations
+
+I would greatly appreciate help implementing these - even if you can only implement a small part of one!
+
+## Installation
+
+You can install this from npm:
+
+```
+npm install rs-buffer
+```
+
+## Usage
+
+### Writable
+
+```typescript
+import { WritableByteBuffer } from "rs-buffer";
+
+const buf = new WritableByteBuffer(7); // create a writable byte buffer with 7 bytes
+
+buf.pushShort(0x1234); // push 0x1234
+buf.pushInt(0x4321ABCD); // push 0x4321ABCD
+buf.pushByte(0xFF); // push 0xFF
+
+buf.buffer; // get the underlying byte buffer to do with as you please
+
+// values here will be:
+// [ 0x12, 0x34, 0x43, 0x21, 0xAB, 0xCD, 0xFF ]
+```
+
+### Readable
+
+```typescript
+import { ReadableByteBuffer } from "rs-buffer";
+
+const buf = new ReadableByteBuffer(buffer); // pass in the Buffer instance you want to actually read from
+
+buf.readInt(); // get an int from the buffer
+buf.readByte(); // get a byte from the buffer
+```
+
 ## Transformations
 
 There are a number of "transformations" that can be made when writing an item to the buffer. The transformation is always made to the least significant bit.
