@@ -78,3 +78,15 @@ buffer.pushByte(0xF1, Transformation.SUBTRACT);
 buffer.pushByte(0xD5, Transformation.NEGATE);
 buffer.pushInt(0x67D401B2);
 ```
+
+## Data Order
+
+You can either use [big- or little-endian data orders](https://en.wikipedia.org/wiki/Endianness) when writing to the buffer.
+
+For example, take a value `0x12345678`. In big-endian order (the default), that will be written as `[ 0x12, 0x34, 0x56, 0x78 ]`, because it starts with the MSB. In little-endian order, however, it will start at the LSB and be written as `[ 0x78, 0x56, 0x34, 0x12 ]`.
+
+### Mixed
+
+The only exception to this is the `pushInt` method which takes a `boolean` parameter `mixed`. This will then split the integer into four octets, order them as above based on their endianness, and then switches the first two with the last two.
+
+Again, take the value `0x12345678`. When written using mixed big-endianness, it will be split into the four octets as detailed above, giving us `[ 0x56, 0x78, 0x12, 0x34 ]`. In the same fashion, when written using mixed little-endianness, the output would be `[ 0x34, 0x12, 0x78, 0x56 ]`
