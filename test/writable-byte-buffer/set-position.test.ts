@@ -1,7 +1,7 @@
 import { TestFixture, TestCase } from "alsatian";
 import { ExpectBuffersToBeEqual } from "../expect";
 
-import { WritableByteBuffer } from "../../src/";
+import { FixedWritableByteBuffer } from "../../src/";
 
 @TestFixture("ByteBuffer#setPosition tests")
 export class ByteBufferSetPositionTestFixture {
@@ -9,7 +9,7 @@ export class ByteBufferSetPositionTestFixture {
     @TestCase([ 0xFF, 0xFF, 0xFF ], 2, [ 0xFF, 0xFF, 0x00 ])
     @TestCase([ 0xFF, 0xFF ], 0, [ 0x00, 0xFF ])
     public shouldSetPositionForOneByte(initial: Array<number>, position: number, expected: Array<number>) {
-        const byteBuffer = new WritableByteBuffer(expected.length);
+        const byteBuffer = new FixedWritableByteBuffer(expected.length);
 
         initial.forEach(i => byteBuffer.pushByte(i));
 
@@ -23,7 +23,7 @@ export class ByteBufferSetPositionTestFixture {
     @TestCase([ 0xFF, 0xFF, 0xFF ], 2, [ 0xFF, 0xFF, 0x00, 0x00 ])
     @TestCase([ 0xFF, 0xFF ], 0, [ 0x00, 0x00 ])
     public shouldSetPositionForTwoBytes(initial: Array<number>, position: number, expected: Array<number>) {
-        const byteBuffer = new WritableByteBuffer(expected.length);
+        const byteBuffer = new FixedWritableByteBuffer(expected.length);
 
         initial.forEach(i => byteBuffer.pushByte(i));
 

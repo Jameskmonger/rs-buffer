@@ -1,6 +1,6 @@
 import { TestFixture, TestCase, Test, Expect } from "alsatian";
 
-import { WritableByteBuffer } from "../../src/";
+import { FixedWritableByteBuffer } from "../../src/";
 
 @TestFixture("ByteBuffer#getPosition tests")
 export class ByteBufferGetPositionTestFixture {
@@ -8,7 +8,7 @@ export class ByteBufferGetPositionTestFixture {
     @TestCase(1)
     @TestCase(2)
     public shouldGetPositionAfterSet(position: number) {
-        const byteBuffer = new WritableByteBuffer();
+        const byteBuffer = new FixedWritableByteBuffer();
 
         // push enough bytes to set the position
         for (let i = 0; i < position; i++) {
@@ -26,7 +26,7 @@ export class ByteBufferGetPositionTestFixture {
     @TestCase(1)
     @TestCase(2)
     public shouldGetPayloadLengthByDefault(length: number) {
-        const byteBuffer = new WritableByteBuffer();
+        const byteBuffer = new FixedWritableByteBuffer();
 
         // push enough bytes to set the position
         for (let i = 0; i < length; i++) {

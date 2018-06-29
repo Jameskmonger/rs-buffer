@@ -21,12 +21,12 @@ npm install rs-buffer
 
 ## Usage
 
-### Writable
+### Writable fixed
 
 ```typescript
-import { WritableByteBuffer } from "rs-buffer";
+import { FixedWritableByteBuffer } from "rs-buffer";
 
-const buf = new WritableByteBuffer(7); // create a writable byte buffer with 7 bytes
+const buf = new FixedWritableByteBuffer(7); // create a writable byte buffer with 7 bytes
 
 buf.pushShort(0x1234); // push 0x1234
 buf.pushInt(0x4321ABCD); // push 0x4321ABCD
@@ -36,6 +36,25 @@ buf.buffer; // get the underlying byte buffer to do with as you please
 
 // values here will be:
 // [ 0x12, 0x34, 0x43, 0x21, 0xAB, 0xCD, 0xFF ]
+```
+
+### Writable variable
+
+You can also have a variable-sized buffer but this is just backed by an array and is slower.
+
+```typescript
+import { VariableWritableByteBuffer } from "rs-buffer";
+
+const buf = new VariableWritableByteBuffer(); // create a variable-sized writable byte buffer
+
+buf.pushInt(0x4321ABCD); // push 0x4321ABCD
+buf.pushInt(0x4321ABCD); // push 0x4321ABCD
+buf.pushInt(0x4321ABCD); // push 0x4321ABCD
+
+buf.buffer; // convert array to byte buffer
+
+// values here will be:
+// [ 0x43, 0x21, 0xAB, 0xCD, 0x43, 0x21, 0xAB, 0xCD, 0x43, 0x21, 0xAB, 0xCD ]
 ```
 
 ### Readable

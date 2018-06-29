@@ -1,7 +1,7 @@
 import { TestFixture, TestCase } from "alsatian";
 import { ExpectBuffersToBeEqual } from "../expect";
 
-import { WritableByteBuffer, DataOrder, Transformation } from "../../src/";
+import { FixedWritableByteBuffer, DataOrder, Transformation } from "../../src/";
 
 @TestFixture("ByteBuffer#pushInt tests")
 export class ByteBufferPushIntTestFixture {
@@ -15,7 +15,7 @@ export class ByteBufferPushIntTestFixture {
   @TestCase(0x12345678, DataOrder.LITTLE_ENDIAN, true, [ 0x34, 0x12, 0x78, 0x56 ])
   @TestCase(0xFFFFFFFF, DataOrder.LITTLE_ENDIAN, true, [ 0xFF, 0xFF, 0xFF, 0xFF ])
   public shouldPushIntInCorrectOrder(value: number, order: DataOrder, mixed: boolean, expected: Array<number>) {
-    const byteBuffer = new WritableByteBuffer(4);
+    const byteBuffer = new FixedWritableByteBuffer(4);
 
     byteBuffer.pushInt(value, order, mixed);
 
@@ -35,7 +35,7 @@ export class ByteBufferPushIntTestFixture {
   @TestCase(0x12345678, Transformation.NEGATE, DataOrder.LITTLE_ENDIAN, false, [ 0x88, 0x56, 0x34, 0x12 ])
   @TestCase(0x12345678, Transformation.NEGATE, DataOrder.LITTLE_ENDIAN, true, [ 0x34, 0x12, 0x88, 0x56 ])
   public shouldApplyTransformationToLSB(value: number, transformation: Transformation, order: DataOrder, mixed: boolean, expected: Array<number>) {
-    const byteBuffer = new WritableByteBuffer(4);
+    const byteBuffer = new FixedWritableByteBuffer(4);
 
     byteBuffer.pushInt(value, order, mixed, transformation);
 
@@ -45,7 +45,7 @@ export class ByteBufferPushIntTestFixture {
   @TestCase(-0x12345678, [ 0xED, 0xCB, 0xA9, 0x88 ])
   @TestCase(-0xF0F0ECAB, [ 0x0F, 0x0F, 0x13, 0x55 ])
   public shouldPushNegativeIntCorrectly(negative: number, expected: Array<string>) {
-    const byteBuffer = new WritableByteBuffer(4);
+    const byteBuffer = new FixedWritableByteBuffer(4);
 
     byteBuffer.pushInt(negative, DataOrder.BIG_ENDIAN, false);
 

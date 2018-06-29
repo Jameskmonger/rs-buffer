@@ -1,14 +1,14 @@
 import { TestFixture, Test } from "alsatian";
 import { ExpectBuffersToBeEqual } from "../expect";
 
-import { WritableByteBuffer } from "../../src/";
+import { FixedWritableByteBuffer } from "../../src/";
 
 @TestFixture("ByteBuffer#setPositionToEnd tests")
 export class ByteBufferSetPositionToEndTestFixture {
 
     @Test()
     public shouldSetPositionToEnd() {
-        const byteBuffer = new WritableByteBuffer(3);
+        const byteBuffer = new FixedWritableByteBuffer(3);
 
         byteBuffer.pushByte(0xFF);
         byteBuffer.pushByte(0xFF);
