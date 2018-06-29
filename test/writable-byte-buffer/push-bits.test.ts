@@ -1,7 +1,7 @@
-import { TestFixture, TestCase, Test } from "alsatian";
+import { TestFixture, TestCase, Test, Expect } from "alsatian";
 import { ExpectBuffersToBeEqual } from "../expect";
 
-import { FixedWritableByteBuffer } from "../../src/";
+import { FixedWritableByteBuffer, VariableWritableByteBuffer } from "../../src/";
 
 @TestFixture("ByteBuffer#pushBits tests")
 export class ByteBufferPushBitsTestFixture {
@@ -64,6 +64,21 @@ export class ByteBufferPushBitsTestFixture {
         byteBuffer.pushBits(16, value);
 
         ExpectBuffersToBeEqual(byteBuffer.buffer, Buffer.from(expected));
+    }
+
+    @TestCase([[1, 1], [2, 3], [1, 1]], 0b1111)
+    @TestCase([[1, 1], [3, 0]], 0b1000)
+    @TestCase([[1, 0], [1, 1], [1, 0], [1, 1]], 0b0101)
+    public shouldPushBitsCorrectly(pairs: [number, number][], expectedFirstNybble: number) {
+        const byteBuffer = new VariableWritableByteBuffer();
+
+        let bitContext = byteBuffer.pushBits(4, 0b1111);
+
+        pairs.forEach(([count, value]) => {
+            bitContext = bitContext.pushBits(count, value);
+        });
+
+        Expect(byteBuffer.buffer[0]).toBe(0b11110000 + expectedFirstNybble);
     }
 
 }

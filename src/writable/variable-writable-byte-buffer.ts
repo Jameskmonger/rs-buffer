@@ -2,7 +2,7 @@ import { getUnsignedByte } from "../util/get-unsigned-byte";
 import { WritableByteBuffer } from "./writable-byte-buffer";
 
 export class VariableWritableByteBuffer extends WritableByteBuffer {
-    private buf: number[];
+    protected buf: number[];
 
     constructor() {
         super();

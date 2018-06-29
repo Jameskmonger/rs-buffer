@@ -13,14 +13,13 @@ export interface BitPushFunction {
 export abstract class WritableByteBuffer {
 
   protected position: number;
+  protected abstract buf: { [index:number] : number };
 
   constructor () {
     this.position = 0;
   }
 
   protected abstract pushSingleByte(value: number): void;
-  protected abstract setSingleByte(position: number, value: number): void;
-  protected abstract getSingleByte(position: number): number;
   public abstract get buffer(): Buffer;
 
   private pushBytes(bytesInBigEndianOrder: Array<number>, orderToPush: Array<number>): void {
@@ -119,26 +118,18 @@ export abstract class WritableByteBuffer {
       bitPosition += count;
       
       for(; count > bitOffset; bitOffset = 8) {
-        const firstByte = this.getSingleByte(bytePos);
-        this.setSingleByte(bytePos, firstByte & BIT_MASK[bitOffset]);
+        this.buf[bytePos] &= ~ BIT_MASK[bitOffset];
+        this.buf[bytePos++] |= (value >> (count - bitOffset)) & BIT_MASK[bitOffset];
 
-        const secondBytePosition = bytePos++;
-        const secondByte = this.getSingleByte(secondBytePosition);
-        this.setSingleByte(secondBytePosition, secondByte | (value >> (count - bitOffset)) & BIT_MASK[bitOffset]);
-        
         count -= bitOffset;
       }
       
       if(count == bitOffset) {
-        let byteValue = this.getSingleByte(bytePos);
-        byteValue &= ~ (BIT_MASK[count] << (bitOffset - count));
-        byteValue |= value & BIT_MASK[bitOffset];
-        this.setSingleByte(bytePos, byteValue);
+        this.buf[bytePos] &= ~ BIT_MASK[bitOffset];
+        this.buf[bytePos] |= value & BIT_MASK[bitOffset];
       } else {
-        let byteValue = this.getSingleByte(bytePos);
-        byteValue &= ~ BIT_MASK[bitOffset];
-        byteValue |= (value & BIT_MASK[count]) << (bitOffset - count);
-        this.setSingleByte(bytePos, byteValue);
+        this.buf[bytePos] &= ~ (BIT_MASK[count] << (bitOffset - count));
+        this.buf[bytePos] |= (value & BIT_MASK[count]) << (bitOffset - count);
       }
 
       // update position incase they want to go back to byte access
