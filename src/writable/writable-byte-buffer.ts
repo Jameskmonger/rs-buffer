@@ -1,33 +1,30 @@
-import { applyTransformation } from "./util/apply-transformation";
-import { BIT_MASK } from "./util/bit-mask";
-import { getUnsignedByte } from "./util/get-unsigned-byte";
-import { transformLsb } from "./util/transform-lsb";
+import { applyTransformation } from "../util/apply-transformation";
+import { BIT_MASK } from "../util/bit-mask";
+import { getUnsignedByte } from "../util/get-unsigned-byte";
+import { transformLsb } from "../util/transform-lsb";
 
-import { DataOrder } from "./data-order";
-import { Transformation } from "./transformation";
+import { DataOrder } from "../data-order";
+import { Transformation } from "../transformation";
 
 export interface BitPushFunction {
   pushBits(count: number, value: number): BitPushFunction
 }
 
-export class WritableByteBuffer {
+export abstract class WritableByteBuffer {
 
-  private position: number;
-  private buf: Buffer;
+  protected position: number;
 
-  constructor (size: number = 16) {
+  constructor () {
     this.position = 0;
-    this.buf = Buffer.alloc(size);
   }
+
+  protected abstract pushSingleByte(value: number): void;
+  protected abstract setSingleByte(position: number, value: number): void;
+  protected abstract getSingleByte(position: number): number;
+  public abstract get buffer(): Buffer;
 
   private pushBytes(bytesInBigEndianOrder: Array<number>, orderToPush: Array<number>): void {
     orderToPush.forEach(i => this.pushSingleByte(bytesInBigEndianOrder[i]));
-  }
-  
-  private pushSingleByte(value: number): void {
-    const byteValue = getUnsignedByte(value);
-
-    this.buf.writeUInt8(byteValue, this.position++);
   }
 
   public pushByte(value: number, transformation: Transformation = Transformation.NONE): void {
@@ -122,18 +119,26 @@ export class WritableByteBuffer {
       bitPosition += count;
       
       for(; count > bitOffset; bitOffset = 8) {
-        this.buf[bytePos] &= ~ BIT_MASK[bitOffset];
-        this.buf[bytePos++] |= (value >> (count - bitOffset)) & BIT_MASK[bitOffset];
+        const firstByte = this.getSingleByte(bytePos);
+        this.setSingleByte(bytePos, firstByte & BIT_MASK[bitOffset]);
+
+        const secondBytePosition = bytePos++;
+        const secondByte = this.getSingleByte(secondBytePosition);
+        this.setSingleByte(secondBytePosition, secondByte | (value >> (count - bitOffset)) & BIT_MASK[bitOffset]);
         
         count -= bitOffset;
       }
       
       if(count == bitOffset) {
-        this.buf[bytePos] &= ~ BIT_MASK[bitOffset];
-        this.buf[bytePos] |= value & BIT_MASK[bitOffset];
+        let byteValue = this.getSingleByte(bytePos);
+        byteValue &= ~ (BIT_MASK[count] << (bitOffset - count));
+        byteValue |= value & BIT_MASK[bitOffset];
+        this.setSingleByte(bytePos, byteValue);
       } else {
-        this.buf[bytePos] &= ~ (BIT_MASK[count] << (bitOffset - count));
-        this.buf[bytePos] |= (value & BIT_MASK[count]) << (bitOffset - count);
+        let byteValue = this.getSingleByte(bytePos);
+        byteValue &= ~ BIT_MASK[bitOffset];
+        byteValue |= (value & BIT_MASK[count]) << (bitOffset - count);
+        this.setSingleByte(bytePos, byteValue);
       }
 
       // update position incase they want to go back to byte access
@@ -167,16 +172,8 @@ export class WritableByteBuffer {
     this.position = position;
   }
 
-  public setPositionToEnd(): void {
-    this.position = this.buf.length - 1;
-  }
-
   public getPosition(): number {
     return this.position;
-  }
-
-  public get buffer(): Buffer {
-    return this.buf;
   }
 
 }

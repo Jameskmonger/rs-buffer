@@ -1,7 +1,7 @@
 import { TestFixture, TestCase, Test } from "alsatian";
 import { ExpectBuffersToBeEqual } from "../expect";
 
-import { WritableByteBuffer } from "../../src/";
+import { FixedWritableByteBuffer } from "../../src/";
 
 @TestFixture("ByteBuffer#pushBits tests")
 export class ByteBufferPushBitsTestFixture {
@@ -16,7 +16,7 @@ export class ByteBufferPushBitsTestFixture {
     @TestCase(123, 7, 246) // 11110110
     @TestCase(215, 8, 215) // 11010111
     public shouldPushOnceCorrectly(value: number, count: number, expected: number) {
-        const byteBuffer = new WritableByteBuffer(1);
+        const byteBuffer = new FixedWritableByteBuffer(1);
 
         byteBuffer.pushBits(count, value);
 
@@ -26,7 +26,7 @@ export class ByteBufferPushBitsTestFixture {
     @TestCase(15, 4, 2, 4, 242) // 11110010
     @TestCase(1, 6, 1, 2, 5) // 00000101
     public shouldPushTwiceCorrectly(firstValue: number, firstCount: number, secondValue: number, secondCount: number, expected: number) {
-        const byteBuffer = new WritableByteBuffer(1);
+        const byteBuffer = new FixedWritableByteBuffer(1);
 
         byteBuffer.pushBits(firstCount, firstValue)
             .pushBits(secondCount, secondValue);
@@ -36,7 +36,7 @@ export class ByteBufferPushBitsTestFixture {
 
     @Test()
     public shouldPushByteDataAfter() {
-        const byteBuffer = new WritableByteBuffer(2);
+        const byteBuffer = new FixedWritableByteBuffer(2);
 
         byteBuffer.pushBits(8, 0xFF);
         byteBuffer.pushByte(0x1A);
@@ -46,7 +46,7 @@ export class ByteBufferPushBitsTestFixture {
 
     @Test()
     public shouldResumeBitAccessCorrectly() {
-        const byteBuffer = new WritableByteBuffer(4);
+        const byteBuffer = new FixedWritableByteBuffer(4);
 
         byteBuffer.pushBits(8, 0xFF);
         byteBuffer.pushByte(0x1A);
@@ -59,7 +59,7 @@ export class ByteBufferPushBitsTestFixture {
     @TestCase(65535, [ 255, 255 ]) // 1111111111111111
     @TestCase(38703, [ 151, 47 ]) // 1001011100101111
     public shouldPushSixteenBits(value: number, expected: Array<number>) {
-        const byteBuffer = new WritableByteBuffer(2);
+        const byteBuffer = new FixedWritableByteBuffer(2);
 
         byteBuffer.pushBits(16, value);
 

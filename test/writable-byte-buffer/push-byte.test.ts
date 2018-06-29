@@ -1,7 +1,7 @@
 import { TestFixture, TestCase } from "alsatian";
 import { ExpectBuffersToBeEqual } from "../expect";
 
-import { WritableByteBuffer, Transformation } from "../../src/";
+import { FixedWritableByteBuffer, Transformation } from "../../src/";
 
 @TestFixture("ByteBuffer#pushByte tests")
 export class ByteBufferPushByteTestFixture {
@@ -15,7 +15,7 @@ export class ByteBufferPushByteTestFixture {
   @TestCase(0x12, Transformation.NEGATE, [ 0xEE ])
   @TestCase(0xFF, Transformation.NEGATE, [ 0x01 ])
   public shouldPushByteWithCorrectTransformation(value: number, transform: Transformation, expected: Array<number>) {
-    const byteBuffer = new WritableByteBuffer(1);
+    const byteBuffer = new FixedWritableByteBuffer(1);
 
     byteBuffer.pushByte(value, transform);
 
@@ -25,7 +25,7 @@ export class ByteBufferPushByteTestFixture {
   @TestCase(-0x34, [ 0xCC ])
   @TestCase(-0xF0, [ 0x10 ])
   public shouldPushNegativeByteCorrectly(negative: number, expected: Array<number>) {
-    const byteBuffer = new WritableByteBuffer(1);
+    const byteBuffer = new FixedWritableByteBuffer(1);
 
     byteBuffer.pushByte(negative);
 

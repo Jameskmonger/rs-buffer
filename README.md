@@ -24,9 +24,9 @@ npm install rs-buffer
 ### Writable
 
 ```typescript
-import { WritableByteBuffer } from "rs-buffer";
+import { FixedWritableByteBuffer } from "rs-buffer";
 
-const buf = new WritableByteBuffer(7); // create a writable byte buffer with 7 bytes
+const buf = new FixedWritableByteBuffer(7); // create a writable byte buffer with 7 bytes
 
 buf.pushShort(0x1234); // push 0x1234
 buf.pushInt(0x4321ABCD); // push 0x4321ABCD
