@@ -22,44 +22,32 @@ export class ReadableByteBuffer {
         return this.position < this.buf.length;
     }
 
-    public readByte(signed: boolean = false): number {
+    public readByte(signed: boolean = true): number {
         const val = this.getNextFromBuffer() >>> 0;
 
-        if (signed && val > 0x7F) {
-            return val - 0x100;
-        }
-
-        return val;
+        return signed && val > 0x7F ? val - 0x100 : val;
     }
 
-    public readShort(signed: boolean = false): number {
+    public readShort(signed: boolean = true): number {
         const val = (
             (this.getNextFromBuffer() << 8 >>> 0) +
             this.getNextFromBuffer() >>> 0
         );
 
-        if(signed && val > 0x7FFF) {
-            return val - 0x10000;
-        }
-
-        return val;
+        return signed && val > 0x7FFF ? val - 0x10000 : val;
     }
 
-    public readTribyte(signed: boolean = false): number {
+    public readTribyte(signed: boolean = true): number {
         const val = (
             (this.getNextFromBuffer() << 16 >>> 0) +
             (this.getNextFromBuffer() << 8 >>> 0) +
             this.getNextFromBuffer() >>> 0
         );
 
-        if(signed && val > 0x7FFFFF) {
-            return val - 0x1000000;
-        }
-
-        return val;
+        return signed && val > 0x7FFFFF ? val - 0x1000000 : val;
     }
 
-    public readInt(signed: boolean = false): number {
+    public readInt(signed: boolean = true): number {
         const val = (
             (this.getNextFromBuffer() << 24 >>> 0) +
             (this.getNextFromBuffer() << 16 >>> 0) +
@@ -67,16 +55,12 @@ export class ReadableByteBuffer {
             this.getNextFromBuffer() >>> 0
         );
 
-        if(signed && val > 0x7FFFFFFF) {
-            return val - 0x100000000;
-        }
-
-        return val;
+        return signed && val > 0x7FFFFFFF ? val - 0x100000000 : val;
     }
 
-    public readLong(signed: boolean = false): [ number, number ] {
-        const high = this.readInt(signed);
-        const low = this.readInt(signed);
+    public readLong(): [ number, number ] {
+        const high = this.readInt(true);
+        const low = this.readInt(true);
 
         return [ high, low ];
     }
@@ -85,7 +69,7 @@ export class ReadableByteBuffer {
         let out = "";
 
         while (true) {
-            const nextByte = this.readByte(false);
+            const nextByte = this.readByte(true);
 
             if (nextByte === 0x0A) {
                 break;
