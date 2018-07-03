@@ -18,6 +18,10 @@ export class ReadableByteBuffer {
         return this.buf.readUInt8(this.position++);
     }
 
+    public hasRemaining(): boolean {
+        return this.position < this.buf.length;
+    }
+
     public readByte(signed: boolean = false): number {
         const val = this.getNextFromBuffer() >>> 0;
 
