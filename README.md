@@ -109,3 +109,32 @@ For example, take a value `0x12345678`. In big-endian order (the default), that 
 The only exception to this is the `pushInt` method which takes a `boolean` parameter `mixed`. This will then split the integer into four octets, order them as above based on their endianness, and then switches the first two with the last two.
 
 Again, take the value `0x12345678`. When written using mixed big-endianness, it will be split into the four octets as detailed above, giving us `[ 0x56, 0x78, 0x12, 0x34 ]`. In the same fashion, when written using mixed little-endianness, the output would be `[ 0x34, 0x12, 0x78, 0x56 ]`
+
+## Pushing bits
+
+You can push bits into a writable byte buffer:
+
+```typescript
+buf.pushBits(4, 0b1111).pushBits(4, 0b0000); // values will be 0b11110000
+```
+
+The first time you call `pushBits` on the buffer, some context is set up to allow for chaining. You can store this context in a variable to keep pushing bits into the same section:
+
+```typescript
+const context = buf.pushBits(4, 0b1111);
+context.pushBits(2, 0b00);
+context.pushBits(2, 0b10);
+// values will be 0b11110010
+```
+
+Performing any byte-level operations will render that context invalid. There are currently no safety guards around that, so make sure that you don't do this:
+
+```typescript
+/* BAD! Do not do this. */
+
+const context = buf.pushBits(4, 0b1111);
+buf.pushByte(0xFF);
+context.pushBits(4, 0b1111);
+
+/* BAD! Do not do this. */
+```
