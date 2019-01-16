@@ -81,4 +81,35 @@ export class ByteBufferPushBitsTestFixture {
         Expect(byteBuffer.buffer[0]).toBe(0b11110000 + expectedFirstNybble);
     }
 
+    @Test()
+    public shouldPreserveContextCorrectlyIfChaining() {
+        const byteBuffer = new VariableWritableByteBuffer();
+
+        byteBuffer.pushBits(2, 0b00).pushBits(2, 0b11).pushBits(2, 0b11).pushBits(2, 0b00);
+
+        Expect(byteBuffer.buffer[0]).toBe(0b00111100);
+    }
+
+    @Test()
+    public shouldPreserveContextCorrectlyIfReusing() {
+        const byteBuffer = new VariableWritableByteBuffer();
+
+        const context = byteBuffer.pushBits(2, 0b00);
+        context.pushBits(2, 0b11).pushBits(2, 0b11);
+        context.pushBits(2, 0b00);
+
+        Expect(byteBuffer.buffer[0]).toBe(0b00111100);
+    }
+
+    @Test()
+    public shouldPreserveContextCorrectlyIfStacking() {
+        const byteBuffer = new VariableWritableByteBuffer();
+
+        const context = byteBuffer.pushBits(2, 0b00);
+        const context2 = context.pushBits(2, 0b11).pushBits(2, 0b11);
+        context2.pushBits(2, 0b00);
+
+        Expect(byteBuffer.buffer[0]).toBe(0b00111100);
+    }
+
 }
