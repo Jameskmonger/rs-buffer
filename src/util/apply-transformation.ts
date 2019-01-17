@@ -18,7 +18,7 @@ const applyTransformation = (byte: number, transformation: Transformation) => {
 
 const reverseTransformation = (byte: number, transformation: Transformation) => {
   if (transformation === Transformation.ADD) {
-    return 128 + byte;
+    return byte - 128;
   }
 
   if (transformation === Transformation.SUBTRACT) {
