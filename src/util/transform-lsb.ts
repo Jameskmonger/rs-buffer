@@ -1,11 +1,15 @@
-import { applyTransformation } from "./apply-transformation";
+import { applyTransformation, reverseTransformation } from "./apply-transformation";
 import { Transformation } from "../transformation";
 
-const transformLsb = (bytes: Array<number>, transformation: Transformation) => {
+const transformLsb = (bytes: Array<number>, transformation: Transformation, reverse: boolean = false) => {
   const lsbIndex = bytes.length - 1;
   const lsbValue = bytes[lsbIndex];
 
-  bytes[lsbIndex] = applyTransformation(lsbValue, transformation);
+  const transformed = reverse
+    ? reverseTransformation(lsbValue, transformation)
+    : applyTransformation(lsbValue, transformation);
+
+  bytes[lsbIndex] = transformed;
 
   return bytes;
 }
