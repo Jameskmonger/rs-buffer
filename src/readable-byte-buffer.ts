@@ -13,6 +13,10 @@ export class ReadableByteBuffer {
     }
 
     public static fromArray(array: Array<number>): ReadableByteBuffer {
+        if (array.some(x => x < -0x80 || x > 0x7F)) {
+            throw Error("Values must be between -128 and 127");
+        }
+
         const buf = Buffer.from(array);
 
         return new ReadableByteBuffer(buf);
@@ -38,11 +42,13 @@ export class ReadableByteBuffer {
 
     public readShort(signed: boolean = true): number {
         const val = (
-            (this.getNextFromBuffer() << 8 >>> 0) +
-            this.getNextFromBuffer() >>> 0
+            (this.getNextFromBuffer() << 8) +
+            (this.getNextFromBuffer() & 0xFF)
         );
 
-        return signed && val > 0x7FFF ? val - 0x10000 : val;
+        return signed
+            ? wrapNumber(val, -0x8000, 0x7FFF)
+            : val & 0xFFFF;
     }
 
     public readTribyte(signed: boolean = true): number {

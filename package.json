@@ -8,7 +8,7 @@
     "prepublishOnly": "npm run build && npm test",
     "build": "rimraf build && tsc -p src",
     "build-test": "rimraf build-test && tsc -p test",
-    "test": "npm run build-test && alsatian \"build-test/test/**/*.test.js\""
+    "test": "npm run build-test && alsatian \"build-test/test/**/*.test.js\" --tap"
   },
   "files": [
     "build"
