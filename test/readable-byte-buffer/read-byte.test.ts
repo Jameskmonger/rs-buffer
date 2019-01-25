@@ -71,4 +71,22 @@ export class ByteBufferReadByteTestFixture {
         Expect(output).toEqual(expected);
     }
 
+    @TestCase([0x12], Transformation.NONE, 0x12)
+    @TestCase([0x7F], Transformation.NONE, 0x7F)
+    @TestCase([0x6F], Transformation.ADD, 0xEF)
+    @TestCase([0x32], Transformation.ADD, 0xB2)
+    @TestCase([-0x12], Transformation.SUBTRACT, 0x92)
+    @TestCase([0x01], Transformation.SUBTRACT, 0x7F)
+    @TestCase([-0x12], Transformation.NEGATE, 0x12)
+    @TestCase([-0x33], Transformation.NEGATE, 0x33)
+    public shouldReadUnsignedByteWithCorrectTransformation(input: Array<number>, transform: Transformation, expected: number) {
+        const buffer = ReadableByteBuffer.fromArray(input);
+
+        const output = [
+            buffer.readByte(false, transform)
+        ];
+
+        Expect(output).toEqual(expected);
+    }
+
 }
