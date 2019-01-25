@@ -1,3 +1,7 @@
+import { Transformation } from "./transformation";
+import { reverseTransformation } from "./util/apply-transformation";
+import { wrapNumber } from "./util/wrap-number";
+
 export class ReadableByteBuffer {
 
     private position: number;
@@ -13,19 +17,23 @@ export class ReadableByteBuffer {
 
         return new ReadableByteBuffer(buf);
     }
-    
+
     private getNextFromBuffer() {
-        return this.buf.readUInt8(this.position++);
+        return this.buf.readInt8(this.position++);
     }
 
     public hasRemaining(): boolean {
         return this.position < this.buf.length;
     }
 
-    public readByte(signed: boolean = true): number {
-        const val = this.getNextFromBuffer() >>> 0;
+    public readByte(signed: boolean = true, transformation: Transformation = Transformation.NONE): number {
+        const val = this.getNextFromBuffer();
 
-        return signed && val > 0x7F ? val - 0x100 : val;
+        const transformed = reverseTransformation(val, transformation);
+
+        return signed
+            ? wrapNumber(transformed, -0x80, 0x7F)
+            : transformed & 0xFF;
     }
 
     public readShort(signed: boolean = true): number {
