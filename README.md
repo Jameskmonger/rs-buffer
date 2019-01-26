@@ -4,12 +4,7 @@ Readable/writable byte buffer designed for a video game
 
 ## Warning!
 
-This is currently incomplete! There are two main things missing:
-
-1. Reading in different orders
-2. Reading with transformations
-
-I would greatly appreciate help implementing these - even if you can only implement a small part of one!
+This is currently incomplete! You can currently only **read** data in big-endian order.
 
 ## Installation
 
@@ -66,6 +61,8 @@ const buf = new ReadableByteBuffer(buffer); // pass in the Buffer instance you w
 
 buf.readInt(); // get an int from the buffer
 buf.readByte(); // get a byte from the buffer
+
+buf.readByte(true, Transformation.ADD); // read a signed byte with "add" type transformation
 ```
 
 ## Transformations
