@@ -93,9 +93,9 @@ export class ReadableByteBuffer {
         return wrapNumber(result, -0x80000000, 0x7FFFFFFF);
     }
 
-    public readLong(): [ number, number ] {
+    public readLong(transformation: Transformation = Transformation.NONE): [ number, number ] {
         const high = this.readInt(false);
-        const low = this.readInt(false);
+        const low = this.readInt(false, transformation);
 
         return [ high, low ];
     }
