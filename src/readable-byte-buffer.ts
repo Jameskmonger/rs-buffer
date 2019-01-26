@@ -63,28 +63,28 @@ export class ReadableByteBuffer {
             : result & 0xFFFFFF;
     }
 
-    public readInt(signed: boolean = true): number {
+    public readInt(signed: boolean = true, transformation: Transformation = Transformation.NONE): number {
         if (signed) {
-            return this.readSignedInt();
+            return this.readSignedInt(transformation);
         }
 
-        return this.readUnsignedInt();
+        return this.readUnsignedInt(transformation);
     }
 
-    private readUnsignedInt() {
+    private readUnsignedInt(transformation: Transformation) {
         const msb1 = this.getNextFromBuffer() & 0xFF;
         const msb2 = this.getNextFromBuffer() & 0xFF;
         const msb3 = this.getNextFromBuffer() & 0xFF;
-        const lsb = this.getNextFromBuffer() & 0xFF;
+        const lsb = reverseTransformation(this.getNextFromBuffer(), transformation) & 0xFF;
 
         return (msb1 << 24 >>> 0) + (msb2 << 16) + (msb3 << 8) + (lsb);
     }
 
-    private readSignedInt() {
+    private readSignedInt(transformation: Transformation) {
         const msb1 = this.getNextFromBuffer();
         const msb2 = this.getNextFromBuffer();
         const msb3 = this.getNextFromBuffer();
-        const lsb = this.getNextFromBuffer() & 0xFF;
+        const lsb = reverseTransformation(this.getNextFromBuffer(), transformation) & 0xFF;
 
         const result = (msb1 << 24) + (msb2 << 16) + (msb3 << 8) + (lsb);
         return wrapNumber(result, -0x80000000, 0x7FFFFFFF);
