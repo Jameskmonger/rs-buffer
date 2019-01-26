@@ -1,54 +1,52 @@
-import { TestFixture, TestCase, Expect } from "alsatian";
+import { TestFixture, TestCase, Expect, FocusTest, FocusTests } from "alsatian";
 
-import { ReadableByteBuffer } from "../../src/";
+import { ReadableByteBuffer, Transformation } from "../../src/";
 
 @TestFixture("ByteBuffer#readInt tests")
 export class ByteBufferReadIntTestFixture {
 
     @TestCase([ 0x12, 0x34, 0x56, 0x78 ], 0x12345678)
-    @TestCase([ 0xAA, 0xBB, 0xCC, 0xDD ], 0xAABBCCDD)
-    public shouldReadSingleUnsignedInt(input: Array<number>, expected: number) {
+    @TestCase([ -0x56, -0x45, -0x34, -0x23 ], 0xAABBCCDD)
+    public shouldReadUnsignedInt(input: Array<number>, expected: number) {
         const buffer = ReadableByteBuffer.fromArray(input);
-        
+
         const output = buffer.readInt(false);
 
         Expect(output).toBe(expected);
     }
 
     @TestCase([ 0x12, 0x34, 0x56, 0x78 ], 0x12345678)
-    @TestCase([ 0xA5, 0x44, 0x33, 0x23 ], -0x5ABBCCDD)
-    public shouldReadSingleSignedInt(input: Array<number>, expected: number) {
+    @TestCase([ -0x5B, 0x44, 0x33, 0x23 ], -0x5ABBCCDD)
+    public shouldReadSignedInt(input: Array<number>, expected: number) {
         const buffer = ReadableByteBuffer.fromArray(input);
-        
+
         const output = buffer.readInt(true);
 
         Expect(output).toBe(expected);
     }
 
-    @TestCase([ 0x12, 0x34, 0x56, 0x78, 0xAB, 0xCD, 0xEF, 0x12 ], [ 0x12345678, 0xABCDEF12 ])
-    @TestCase([ 0xAB, 0xCD, 0x11, 0x0F, 0x77, 0x1D, 0x39, 0xE3 ], [ 0xABCD110F, 0x771D39E3 ])
-    public shouldReadTwoUnsignedInts(input: Array<number>, expected: Array<number>) {
+    @TestCase([ 0x12, 0x34, 0x56, 0x78 ], Transformation.NONE, 0x12345678)
+    @TestCase([ 0x12, 0x34, 0x56, -0x08 ], Transformation.ADD, 0x12345678)
+    @TestCase([ 0x12, 0x34, 0x56, 0x08 ], Transformation.SUBTRACT, 0x12345678)
+    @TestCase([ 0x12, 0x34, 0x56, -0x78 ], Transformation.NEGATE, 0x12345678)
+    public shouldReadUnsignedIntWithCorrectTransformation(input: Array<number>, transformation: Transformation, expected: number) {
         const buffer = ReadableByteBuffer.fromArray(input);
-        
-        const output = [
-            buffer.readInt(false),
-            buffer.readInt(false)
-        ];
 
-        Expect(output).toEqual(expected);
+        const output = buffer.readInt(false, transformation);
+
+        Expect(output).toBe(expected);
     }
 
-    @TestCase([ 0x12, 0x34, 0x56, 0x78, 0x31, 0x52, 0x63, 0x74 ], [ 0x12345678, 0x31526374 ])
-    @TestCase([ 0xCB, 0x54, 0xEE, 0x12, 0xA5, 0xEE, 0x01, 0xBD ], [ -0x34AB11EE, -0x5A11FE43 ])
-    public shouldReadTwoSignedInts(input: Array<number>, expected: Array<number>) {
+    @TestCase([ -0x5B, 0x44, 0x33, 0x23 ], Transformation.NONE, -0x5ABBCCDD)
+    @TestCase([ -0x5B, 0x44, 0x33, -0x5D ], Transformation.ADD, -0x5ABBCCDD)
+    @TestCase([ -0x5B, 0x44, 0x33, 0x5D ], Transformation.SUBTRACT, -0x5ABBCCDD)
+    @TestCase([ -0x5B, 0x44, 0x33, -0x23 ], Transformation.NEGATE, -0x5ABBCCDD)
+    public shouldReadSignedIntWithCorrectTransformation(input: Array<number>, transformation: Transformation, expected: number) {
         const buffer = ReadableByteBuffer.fromArray(input);
-        
-        const output = [
-            buffer.readInt(true),
-            buffer.readInt(true)
-        ];
 
-        Expect(output).toEqual(expected);
+        const output = buffer.readInt(true, transformation);
+
+        Expect(output).toBe(expected);
     }
 
 }

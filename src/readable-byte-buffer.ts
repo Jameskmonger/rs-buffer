@@ -1,3 +1,7 @@
+import { Transformation } from "./transformation";
+import { reverseTransformation } from "./util/apply-transformation";
+import { wrapNumber } from "./util/wrap-number";
+
 export class ReadableByteBuffer {
 
     private position: number;
@@ -9,53 +13,81 @@ export class ReadableByteBuffer {
     }
 
     public static fromArray(array: Array<number>): ReadableByteBuffer {
+        if (array.some(x => x < -0x80 || x > 0x7F)) {
+            throw Error("Values must be between -128 and 127");
+        }
+
         const buf = Buffer.from(array);
 
         return new ReadableByteBuffer(buf);
     }
-    
+
     private getNextFromBuffer() {
-        return this.buf.readUInt8(this.position++);
+        return this.buf.readInt8(this.position++);
     }
 
     public hasRemaining(): boolean {
         return this.position < this.buf.length;
     }
 
-    public readByte(signed: boolean = true): number {
-        const val = this.getNextFromBuffer() >>> 0;
+    public readByte(signed: boolean = true, transformation: Transformation = Transformation.NONE): number {
+        const val = this.getNextFromBuffer();
 
-        return signed && val > 0x7F ? val - 0x100 : val;
+        const transformed = reverseTransformation(val, transformation);
+
+        return signed
+            ? wrapNumber(transformed, -0x80, 0x7F)
+            : transformed & 0xFF;
     }
 
-    public readShort(signed: boolean = true): number {
-        const val = (
-            (this.getNextFromBuffer() << 8 >>> 0) +
-            this.getNextFromBuffer() >>> 0
-        );
+    public readShort(signed: boolean = true, transformation: Transformation = Transformation.NONE): number {
+        const msb = this.getNextFromBuffer();
+        const lsb = reverseTransformation(this.getNextFromBuffer(), transformation);
 
-        return signed && val > 0x7FFF ? val - 0x10000 : val;
+        const result = (msb << 8) + (lsb & 0xFF);
+
+        return signed
+            ? wrapNumber(result, -0x8000, 0x7FFF)
+            : result & 0xFFFF;
     }
 
-    public readTribyte(signed: boolean = true): number {
-        const val = (
-            (this.getNextFromBuffer() << 16 >>> 0) +
-            (this.getNextFromBuffer() << 8 >>> 0) +
-            this.getNextFromBuffer() >>> 0
-        );
+    public readTribyte(signed: boolean = true, transformation: Transformation = Transformation.NONE): number {
+        const msb1 = this.getNextFromBuffer() & 0xFF;
+        const msb2 = this.getNextFromBuffer() & 0xFF;
+        const lsb = reverseTransformation(this.getNextFromBuffer(), transformation) & 0xFF;
 
-        return signed && val > 0x7FFFFF ? val - 0x1000000 : val;
+        const result = (msb1 << 16) + (msb2 << 8) + (lsb);
+
+        return signed
+            ? wrapNumber(result, -0x800000, 0x7FFFFF)
+            : result & 0xFFFFFF;
     }
 
-    public readInt(signed: boolean = true): number {
-        const val = (
-            (this.getNextFromBuffer() << 24 >>> 0) +
-            (this.getNextFromBuffer() << 16 >>> 0) +
-            (this.getNextFromBuffer() << 8 >>> 0) +
-            this.getNextFromBuffer() >>> 0
-        );
+    public readInt(signed: boolean = true, transformation: Transformation = Transformation.NONE): number {
+        if (signed) {
+            return this.readSignedInt(transformation);
+        }
 
-        return signed && val > 0x7FFFFFFF ? val - 0x100000000 : val;
+        return this.readUnsignedInt(transformation);
+    }
+
+    private readUnsignedInt(transformation: Transformation) {
+        const msb1 = this.getNextFromBuffer() & 0xFF;
+        const msb2 = this.getNextFromBuffer() & 0xFF;
+        const msb3 = this.getNextFromBuffer() & 0xFF;
+        const lsb = reverseTransformation(this.getNextFromBuffer(), transformation) & 0xFF;
+
+        return (msb1 << 24 >>> 0) + (msb2 << 16) + (msb3 << 8) + (lsb);
+    }
+
+    private readSignedInt(transformation: Transformation) {
+        const msb1 = this.getNextFromBuffer();
+        const msb2 = this.getNextFromBuffer();
+        const msb3 = this.getNextFromBuffer();
+        const lsb = reverseTransformation(this.getNextFromBuffer(), transformation) & 0xFF;
+
+        const result = (msb1 << 24) + (msb2 << 16) + (msb3 << 8) + (lsb);
+        return wrapNumber(result, -0x80000000, 0x7FFFFFFF);
     }
 
     public readLong(): [ number, number ] {

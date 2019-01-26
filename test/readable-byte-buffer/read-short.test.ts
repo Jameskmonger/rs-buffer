@@ -1,51 +1,53 @@
-import { TestFixture, TestCase, Expect } from "alsatian";
+import { TestFixture, TestCase, Expect, FocusTests, FocusTest } from "alsatian";
 
-import { ReadableByteBuffer } from "../../src/";
+import { ReadableByteBuffer, Transformation } from "../../src/";
 
 @TestFixture("ByteBuffer#readShort tests")
 export class ByteBufferReadShortTestFixture {
 
-    @TestCase(0x12, 0x34, 0x1234)
-    @TestCase(0xAA, 0xBB, 0xAABB)
-    public shouldReadSingleUnsignedShort(first: number, second: number, expected: number) {
-        const buffer = ReadableByteBuffer.fromArray([ first, second ]);
-        
+    @TestCase([ 0x2F, -0x01 ], 0x2FFF)
+    @TestCase([ -0x56, -0x45 ], 0xAABB)
+    public shouldReadUnsignedShort(input: number[], expected: number) {
+        const buffer = ReadableByteBuffer.fromArray(input);
+
         const output = buffer.readShort(false);
 
         Expect(output).toBe(expected);
     }
 
-    @TestCase(0x12, 0x34, 0x1234)
-    @TestCase(0xA5, 0x45, -0x5ABB)
-    public shouldReadSingleSignedShort(first: number, second: number, expected: number) {
-        const buffer = ReadableByteBuffer.fromArray([ first, second ]);
-        
+    @TestCase([ 0x12, 0x34 ], 0x1234)
+    @TestCase([ -0x5B, 0x45 ], -0x5ABB)
+    public shouldReadSignedShort(input: number[], expected: number) {
+        const buffer = ReadableByteBuffer.fromArray(input);
+
         const output = buffer.readShort(true);
 
         Expect(output).toBe(expected);
     }
 
-    @TestCase([ 0x12, 0x34, 0x56, 0x78 ], [ 0x1234, 0x5678 ])
-    @TestCase([ 0xAB, 0xCD, 0x11, 0x77], [ 0xABCD, 0x1177 ])
-    public shouldReadTwoUnsignedShorts(input: Array<number>, expected: Array<number>) {
+    @TestCase([0x12, 0x34], Transformation.NONE, 0x1234)
+    @TestCase([0x01, -0x7E], Transformation.ADD, 0x0102)
+    @TestCase([0x33, 0x3B], Transformation.SUBTRACT, 0x3345)
+    @TestCase([0x77, -0x67], Transformation.NEGATE, 0x7767)
+    public shouldReadUnsignedShortWithCorrectTransformation(input: Array<number>, transform: Transformation, expected: number) {
         const buffer = ReadableByteBuffer.fromArray(input);
-        
+
         const output = [
-            buffer.readShort(false),
-            buffer.readShort(false)
+            buffer.readShort(false, transform)
         ];
 
         Expect(output).toEqual(expected);
     }
 
-    @TestCase([ 0x12, 0x34, 0x56, 0x78 ], [ 0x1234, 0x5678 ])
-    @TestCase([ 0xCB, 0x55, 0xA5, 0xEF ], [ -0x34AB, -0x5A11 ])
-    public shouldReadTwoSignedShorts(input: Array<number>, expected: Array<number>) {
+    @TestCase([-0x35, 0x55], Transformation.NONE, -0x34AB)
+    @TestCase([-0x35, -0x2b], Transformation.ADD, -0x34AB)
+    @TestCase([-0x35, 0x2b], Transformation.SUBTRACT, -0x34AB)
+    @TestCase([-0x35, -0x55], Transformation.NEGATE, -0x34AB)
+    public shouldReadSignedShortWithCorrectTransformation(input: Array<number>, transform: Transformation, expected: number) {
         const buffer = ReadableByteBuffer.fromArray(input);
-        
+
         const output = [
-            buffer.readShort(true),
-            buffer.readShort(true)
+            buffer.readShort(true, transform)
         ];
 
         Expect(output).toEqual(expected);
