@@ -1,4 +1,4 @@
-import { TestFixture, TestCase, Expect } from "alsatian";
+import { TestFixture, TestCase, Expect, FocusTest, FocusTests } from "alsatian";
 
 import { ReadableByteBuffer } from "../../src/";
 
@@ -6,7 +6,7 @@ import { ReadableByteBuffer } from "../../src/";
 export class ByteBufferReadIntTestFixture {
 
     @TestCase([ 0x12, 0x34, 0x56, 0x78 ], 0x12345678)
-    @TestCase([ 0xAA, 0xBB, 0xCC, 0xDD ], 0xAABBCCDD)
+    @TestCase([ -0x56, -0x45, -0x34, -0x23 ], 0xAABBCCDD)
     public shouldReadUnsignedInt(input: Array<number>, expected: number) {
         const buffer = ReadableByteBuffer.fromArray(input);
 
@@ -16,7 +16,7 @@ export class ByteBufferReadIntTestFixture {
     }
 
     @TestCase([ 0x12, 0x34, 0x56, 0x78 ], 0x12345678)
-    @TestCase([ 0xA5, 0x44, 0x33, 0x23 ], -0x5ABBCCDD)
+    @TestCase([ -0x5B, 0x44, 0x33, 0x23 ], -0x5ABBCCDD)
     public shouldReadSignedInt(input: Array<number>, expected: number) {
         const buffer = ReadableByteBuffer.fromArray(input);
 

@@ -64,14 +64,30 @@ export class ReadableByteBuffer {
     }
 
     public readInt(signed: boolean = true): number {
-        const val = (
-            (this.getNextFromBuffer() << 24 >>> 0) +
-            (this.getNextFromBuffer() << 16 >>> 0) +
-            (this.getNextFromBuffer() << 8 >>> 0) +
-            this.getNextFromBuffer() >>> 0
-        );
+        if (signed) {
+            return this.readSignedInt();
+        }
 
-        return signed && val > 0x7FFFFFFF ? val - 0x100000000 : val;
+        return this.readUnsignedInt();
+    }
+
+    private readUnsignedInt() {
+        const msb1 = this.getNextFromBuffer() & 0xFF;
+        const msb2 = this.getNextFromBuffer() & 0xFF;
+        const msb3 = this.getNextFromBuffer() & 0xFF;
+        const lsb = this.getNextFromBuffer() & 0xFF;
+
+        return (msb1 << 24 >>> 0) + (msb2 << 16) + (msb3 << 8) + (lsb);
+    }
+
+    private readSignedInt() {
+        const msb1 = this.getNextFromBuffer();
+        const msb2 = this.getNextFromBuffer();
+        const msb3 = this.getNextFromBuffer();
+        const lsb = this.getNextFromBuffer() & 0xFF;
+
+        const result = (msb1 << 24) + (msb2 << 16) + (msb3 << 8) + (lsb);
+        return wrapNumber(result, -0x80000000, 0x7FFFFFFF);
     }
 
     public readLong(): [ number, number ] {
