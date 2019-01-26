@@ -1,8 +1,7 @@
-import { TestFixture, TestCase, Expect, FocusTest, FocusTests } from "alsatian";
+import { TestFixture, TestCase, Expect } from "alsatian";
 
-import { ReadableByteBuffer } from "../../src/";
+import { ReadableByteBuffer, Transformation } from "../../src/";
 
-@FocusTests
 @TestFixture("ByteBuffer#readTribyte tests")
 export class ByteBufferReadTribyteTestFixture {
 
@@ -22,6 +21,30 @@ export class ByteBufferReadTribyteTestFixture {
         const buffer = ReadableByteBuffer.fromArray(input);
 
         const output = buffer.readTribyte(true);
+
+        Expect(output).toBe(expected);
+    }
+
+    @TestCase([ -0x56, -0x45, -0x34 ], Transformation.NONE, 0xAABBCC)
+    @TestCase([ -0x56, -0x45, 0x4C ], Transformation.ADD, 0xAABBCC)
+    @TestCase([ -0x56, -0x45, -0x4C ], Transformation.SUBTRACT, 0xAABBCC)
+    @TestCase([ -0x56, -0x45, 0x34 ], Transformation.NEGATE, 0xAABBCC)
+    public shouldReadUnsignedTribyteWithCorrectTransformation(input: Array<number>, transformation: Transformation, expected: number) {
+        const buffer = ReadableByteBuffer.fromArray(input);
+
+        const output = buffer.readTribyte(false, transformation);
+
+        Expect(output).toBe(expected);
+    }
+
+    @TestCase([ -0x13, -0x35, -0x56 ], Transformation.NONE, -0x123456)
+    @TestCase([ -0x13, -0x35, 0x2A ], Transformation.ADD, -0x123456)
+    @TestCase([ -0x13, -0x35, -0x2A ], Transformation.SUBTRACT, -0x123456)
+    @TestCase([ -0x13, -0x35, 0x56 ], Transformation.NEGATE, -0x123456)
+    public shouldReadSignedTribyteWithCorrectTransformation(input: Array<number>, transformation: Transformation, expected: number) {
+        const buffer = ReadableByteBuffer.fromArray(input);
+
+        const output = buffer.readTribyte(true, transformation);
 
         Expect(output).toBe(expected);
     }

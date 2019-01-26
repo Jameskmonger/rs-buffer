@@ -51,10 +51,10 @@ export class ReadableByteBuffer {
             : result & 0xFFFF;
     }
 
-    public readTribyte(signed: boolean = true): number {
+    public readTribyte(signed: boolean = true, transformation: Transformation = Transformation.NONE): number {
         const msb1 = this.getNextFromBuffer() & 0xFF;
         const msb2 = this.getNextFromBuffer() & 0xFF;
-        const lsb = this.getNextFromBuffer() & 0xFF;
+        const lsb = reverseTransformation(this.getNextFromBuffer(), transformation) & 0xFF;
 
         const result = (msb1 << 16) + (msb2 << 8) + (lsb);
 
