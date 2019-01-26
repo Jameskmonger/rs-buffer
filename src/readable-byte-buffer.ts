@@ -52,13 +52,15 @@ export class ReadableByteBuffer {
     }
 
     public readTribyte(signed: boolean = true): number {
-        const val = (
-            (this.getNextFromBuffer() << 16 >>> 0) +
-            (this.getNextFromBuffer() << 8 >>> 0) +
-            this.getNextFromBuffer() >>> 0
-        );
+        const msb1 = this.getNextFromBuffer() & 0xFF;
+        const msb2 = this.getNextFromBuffer() & 0xFF;
+        const lsb = this.getNextFromBuffer() & 0xFF;
 
-        return signed && val > 0x7FFFFF ? val - 0x1000000 : val;
+        const result = (msb1 << 16) + (msb2 << 8) + (lsb);
+
+        return signed
+            ? wrapNumber(result, -0x800000, 0x7FFFFF)
+            : result & 0xFFFFFF;
     }
 
     public readInt(signed: boolean = true): number {
