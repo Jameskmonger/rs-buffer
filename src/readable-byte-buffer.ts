@@ -84,15 +84,18 @@ export class ReadableByteBuffer {
         const msb1 = this.getNextFromBuffer();
         const msb2 = this.getNextFromBuffer();
         const msb3 = this.getNextFromBuffer();
-        const lsb = reverseTransformation(this.getNextFromBuffer(), transformation) & 0xFF;
 
-        const result = (msb1 << 24) + (msb2 << 16) + (msb3 << 8) + (lsb);
+        const lsb = this.getNextFromBuffer();
+        const transformedLsb = reverseTransformation(lsb, transformation);
+        const wrappedLsb = wrapNumber(transformedLsb, -0x80, 0x7F);
+
+        const result = (msb1 << 24) + (msb2 << 16) + (msb3 << 8) + (wrappedLsb);
         return wrapNumber(result, -0x80000000, 0x7FFFFFFF);
     }
 
-    public readLong(): [ number, number ] {
-        const high = this.readInt(true);
-        const low = this.readInt(true);
+    public readLong(transformation: Transformation = Transformation.NONE): [ number, number ] {
+        const high = this.readInt(false);
+        const low = this.readInt(false, transformation);
 
         return [ high, low ];
     }
