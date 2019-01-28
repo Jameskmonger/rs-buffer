@@ -64,7 +64,7 @@ export class ReadableByteBuffer {
             : result & 0xFFFFFF;
     }
 
-    public readInt(signed: boolean = true, transformation: Transformation = Transformation.NONE, order: DataOrder = DataOrder.BIG_ENDIAN): number {
+    public readInt(signed: boolean = true, transformation: Transformation = Transformation.NONE, order: DataOrder = DataOrder.BIG_ENDIAN, mixed: boolean = false): number {
         if (signed) {
             return this.readSignedInt(transformation);
         }
