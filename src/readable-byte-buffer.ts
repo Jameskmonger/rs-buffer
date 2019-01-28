@@ -1,6 +1,7 @@
 import { Transformation } from "./transformation";
 import { reverseTransformation } from "./util/apply-transformation";
 import { wrapNumber } from "./util/wrap-number";
+import { DataOrder } from ".";
 
 export class ReadableByteBuffer {
 
@@ -40,7 +41,7 @@ export class ReadableByteBuffer {
             : transformed & 0xFF;
     }
 
-    public readShort(signed: boolean = true, transformation: Transformation = Transformation.NONE): number {
+    public readShort(signed: boolean = true, transformation: Transformation = Transformation.NONE, order: DataOrder = DataOrder.BIG_ENDIAN): number {
         const msb = this.getNextFromBuffer();
         const lsb = reverseTransformation(this.getNextFromBuffer(), transformation);
 
@@ -51,7 +52,7 @@ export class ReadableByteBuffer {
             : result & 0xFFFF;
     }
 
-    public readTribyte(signed: boolean = true, transformation: Transformation = Transformation.NONE): number {
+    public readTribyte(signed: boolean = true, transformation: Transformation = Transformation.NONE, order: DataOrder = DataOrder.BIG_ENDIAN): number {
         const msb1 = this.getNextFromBuffer() & 0xFF;
         const msb2 = this.getNextFromBuffer() & 0xFF;
         const lsb = reverseTransformation(this.getNextFromBuffer(), transformation) & 0xFF;
@@ -63,7 +64,7 @@ export class ReadableByteBuffer {
             : result & 0xFFFFFF;
     }
 
-    public readInt(signed: boolean = true, transformation: Transformation = Transformation.NONE): number {
+    public readInt(signed: boolean = true, transformation: Transformation = Transformation.NONE, order: DataOrder = DataOrder.BIG_ENDIAN): number {
         if (signed) {
             return this.readSignedInt(transformation);
         }
@@ -93,7 +94,7 @@ export class ReadableByteBuffer {
         return wrapNumber(result, -0x80000000, 0x7FFFFFFF);
     }
 
-    public readLong(transformation: Transformation = Transformation.NONE): [ number, number ] {
+    public readLong(transformation: Transformation = Transformation.NONE, order: DataOrder = DataOrder.BIG_ENDIAN): [ number, number ] {
         const high = this.readInt(false);
         const low = this.readInt(false, transformation);
 
