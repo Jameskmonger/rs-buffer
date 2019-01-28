@@ -42,8 +42,12 @@ export class ReadableByteBuffer {
     }
 
     public readShort(signed: boolean = true, transformation: Transformation = Transformation.NONE, order: DataOrder = DataOrder.BIG_ENDIAN): number {
-        const msb = this.getNextFromBuffer();
-        const lsb = reverseTransformation(this.getNextFromBuffer(), transformation);
+        const first = this.getNextFromBuffer();
+        const second = this.getNextFromBuffer();
+
+        const [ msb, lsb ] = order === DataOrder.BIG_ENDIAN
+            ? [ first, reverseTransformation(second, transformation) ]
+            : [ second, reverseTransformation(first, transformation) ];
 
         const result = (msb << 8) + (lsb & 0xFF);
 
