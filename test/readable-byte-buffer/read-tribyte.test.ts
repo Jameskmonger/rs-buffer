@@ -19,8 +19,8 @@ export class ByteBufferReadTribyteTestFixture {
 
     @TestCase([ 0x12, 0x34, 0x56 ], DataOrder.BIG_ENDIAN, 0x123456)
     @TestCase([ -0x5B, 0x44, 0x34 ], DataOrder.BIG_ENDIAN, -0x5ABBCC)
-    @TestCase([ 0x56, 0x34, 0x12 ], DataOrder.BIG_ENDIAN, 0x123456)
-    @TestCase([ 0x34, 0x44, -0x5B ], DataOrder.BIG_ENDIAN, -0x5ABBCC)
+    @TestCase([ 0x56, 0x34, 0x12 ], DataOrder.LITTLE_ENDIAN, 0x123456)
+    @TestCase([ 0x34, 0x44, -0x5B ], DataOrder.LITTLE_ENDIAN, -0x5ABBCC)
     public shouldReadSignedTribyte(input: Array<number>, order: DataOrder, expected: number) {
         const buffer = ReadableByteBuffer.fromArray(input);
 
