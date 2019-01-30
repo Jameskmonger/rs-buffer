@@ -20,13 +20,13 @@ import { FixedWritableByteBuffer } from "rs-buffer";
 const buf = new FixedWritableByteBuffer(7); // create a writable byte buffer with 7 bytes
 
 buf.pushShort(0x1234); // push 0x1234
-buf.pushInt(0x4321ABCD); // push 0x4321ABCD
+buf.pushInt(0x4321ABCD, Transformation.NONE, DataOrder.LITTLE_ENDIAN); // push 0x4321ABCD in little endian order
 buf.pushByte(0xFF); // push 0xFF
 
 buf.buffer; // get the underlying byte buffer to do with as you please
 
 // values here will be:
-// [ 0x12, 0x34, 0x43, 0x21, 0xAB, 0xCD, 0xFF ]
+// [ 0x12, 0x34, 0xCD, 0xAB, 0x21, 0x43, 0xFF ]
 ```
 
 ### Writable variable
