@@ -1,4 +1,4 @@
-import { TestFixture, TestCase, Expect, FocusTest, FocusTests } from "alsatian";
+import { TestFixture, TestCase, Expect } from "alsatian";
 
 import { ReadableByteBuffer, Transformation, DataOrder } from "../../src/";
 

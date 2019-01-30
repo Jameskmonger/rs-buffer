@@ -1,7 +1,7 @@
 import { Transformation } from "./transformation";
 import { reverseTransformation } from "./util/apply-transformation";
 import { wrapNumber } from "./util/wrap-number";
-import { DataOrder } from ".";
+import { DataOrder } from "./data-order";
 
 export class ReadableByteBuffer {
 

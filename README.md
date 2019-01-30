@@ -95,7 +95,7 @@ buffer.pushInt(0x67D401B2);
 
 ## Data Order
 
-You can either use [big- or little-endian data orders](https://en.wikipedia.org/wiki/Endianness) when interacting to the buffer.
+You can either use [big- or little-endian data orders](https://en.wikipedia.org/wiki/Endianness) when interacting with the buffer.
 
 For example, take a value `0x12345678`. In big-endian order (the default), that will be written as `[ 0x12, 0x34, 0x56, 0x78 ]`, because it starts with the MSB. In little-endian order, however, it will start at the LSB and be written as `[ 0x78, 0x56, 0x34, 0x12 ]`.
 
