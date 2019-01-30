@@ -32,7 +32,7 @@ export abstract class WritableByteBuffer {
     this.pushSingleByte(transformedByte);
   }
 
-  public pushShort(value: number, order: DataOrder = DataOrder.BIG_ENDIAN, transformation: Transformation = Transformation.NONE): void {
+  public pushShort(value: number, transformation: Transformation = Transformation.NONE, order: DataOrder = DataOrder.BIG_ENDIAN): void {
     // apply all transformations and store in big endian order
     // as it makes the code a bit cleaner when actually pushing them to payload
     const bytesToPushBigEndian = transformLsb([
@@ -48,7 +48,7 @@ export abstract class WritableByteBuffer {
     this.pushBytes(bytesToPushBigEndian, byteOrder);
   }
 
-  public pushTribyte(value: number, order: DataOrder = DataOrder.BIG_ENDIAN, transformation: Transformation = Transformation.NONE): void {
+  public pushTribyte(value: number, transformation: Transformation = Transformation.NONE, order: DataOrder = DataOrder.BIG_ENDIAN): void {
     const bytesToPushBigEndian = transformLsb([
       (value >> 16) & 0xFF,
       (value >> 8) & 0xFF,
@@ -63,7 +63,7 @@ export abstract class WritableByteBuffer {
     this.pushBytes(bytesToPushBigEndian, byteOrder);
   }
 
-  public pushInt(value: number, order: DataOrder = DataOrder.BIG_ENDIAN, mixed: boolean = false, transformation: Transformation = Transformation.NONE): void {
+  public pushInt(value: number, transformation: Transformation = Transformation.NONE, order: DataOrder = DataOrder.BIG_ENDIAN, mixed: boolean = false): void {
     // apply all transformations and store in big endian order
     // as it makes the code a bit cleaner when actually pushing them to payload
     const bytesToPushBigEndian = transformLsb([
@@ -88,7 +88,7 @@ export abstract class WritableByteBuffer {
     }
   }
 
-  public pushLong(high: number, low: number, order: DataOrder = DataOrder.BIG_ENDIAN, transformation: Transformation = Transformation.NONE): void {
+  public pushLong(high: number, low: number, transformation: Transformation = Transformation.NONE, order: DataOrder = DataOrder.BIG_ENDIAN): void {
     const bytesToPushBigEndian = transformLsb([
       (high >> 24) & 0xFF,
       (high >> 16) & 0xFF,
