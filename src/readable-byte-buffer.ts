@@ -104,11 +104,13 @@ export class ReadableByteBuffer {
     private readUnsignedInt(first: number, second: number, third: number, fourth: number, transformation: Transformation, order: DataOrder, mixed: boolean) {
         const [ msb1, msb2, msb3, lsb ] = this.orderIntOctets(first, second, third, fourth, order, mixed);
 
+        const reversed = reverseTransformation(lsb, transformation);
+
         return (
             ((msb1 & 0xFF) << 24 >>> 0)
             + ((msb2 & 0xFF) << 16)
             + ((msb3 & 0xFF) << 8)
-            + (reverseTransformation(lsb, transformation) & 0xFF)
+            + (reversed & 0xFF)
         );
     }
 
@@ -123,10 +125,17 @@ export class ReadableByteBuffer {
     }
 
     public readLong(transformation: Transformation = Transformation.NONE, order: DataOrder = DataOrder.BIG_ENDIAN): [number, number] {
-        const high = this.readInt(false);
-        const low = this.readInt(false, transformation);
+        if (order === DataOrder.BIG_ENDIAN) {
+            const first = this.readInt(false, Transformation.NONE, order);
+            const second = this.readInt(false, transformation, order);
 
-        return [high, low];
+            return [ first, second ];
+        }
+
+        const first = this.readInt(false, transformation, order);
+        const second = this.readInt(false, Transformation.NONE, order);
+
+        return [ second, first ];
     }
 
     public readString(): string {

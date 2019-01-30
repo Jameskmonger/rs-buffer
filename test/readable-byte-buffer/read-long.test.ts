@@ -2,7 +2,6 @@ import { TestFixture, TestCase, Expect, FocusTest, IgnoreTest, IgnoreTests, Focu
 
 import { ReadableByteBuffer, Transformation, DataOrder } from "../../src/";
 
-@IgnoreTests("Ordering not yet implemented")
 @TestFixture("ByteBuffer#readLong tests")
 export class ByteBufferReadLongTestFixture {
 
