@@ -13,7 +13,7 @@ export class ByteBufferPushLongTestFixture {
   public shouldPushLongInCorrectOrder(high: number, low: number, order: DataOrder.BIG_ENDIAN | DataOrder.LITTLE_ENDIAN, expected: Array<number>) {
     const byteBuffer = new FixedWritableByteBuffer(8);
 
-    byteBuffer.pushLong(high, low, order);
+    byteBuffer.pushLong(high, low, Transformation.NONE, order);
 
     ExpectBuffersToBeEqual(byteBuffer.buffer, Buffer.from(expected));
   }
@@ -27,7 +27,7 @@ export class ByteBufferPushLongTestFixture {
   public shouldApplyTransformationToLSB(high: number, low: number, transformation: Transformation, order: DataOrder.BIG_ENDIAN | DataOrder.LITTLE_ENDIAN, expected: Array<number>) {
     const byteBuffer = new FixedWritableByteBuffer(8);
 
-    byteBuffer.pushLong(high, low, order, transformation);
+    byteBuffer.pushLong(high, low, transformation, order);
 
     ExpectBuffersToBeEqual(byteBuffer.buffer, Buffer.from(expected));
   }
@@ -37,7 +37,7 @@ export class ByteBufferPushLongTestFixture {
   public shouldPushNegativeLongCorrectly(high: number, low: number, expected: Array<string>) {
     const byteBuffer = new FixedWritableByteBuffer(8);
 
-    byteBuffer.pushLong(high, low, DataOrder.BIG_ENDIAN);
+    byteBuffer.pushLong(high, low, Transformation.NONE, DataOrder.BIG_ENDIAN);
 
     ExpectBuffersToBeEqual(byteBuffer.buffer, Buffer.from(expected));
   }

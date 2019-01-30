@@ -13,7 +13,7 @@ export class ByteBufferPushTribyteTestFixture {
   public shouldPushTribyteInCorrectOrder(value: number, order: DataOrder.BIG_ENDIAN | DataOrder.LITTLE_ENDIAN, expected: Array<number>) {
     const byteBuffer = new FixedWritableByteBuffer(3);
 
-    byteBuffer.pushTribyte(value, order);
+    byteBuffer.pushTribyte(value, Transformation.NONE, order);
 
     ExpectBuffersToBeEqual(byteBuffer.buffer, Buffer.from(expected));
   }
@@ -27,7 +27,7 @@ export class ByteBufferPushTribyteTestFixture {
   public shouldApplyTransformationToLSB(value: number, transformation: Transformation, order: DataOrder.BIG_ENDIAN | DataOrder.LITTLE_ENDIAN, expected: Array<number>) {
     const byteBuffer = new FixedWritableByteBuffer(3);
 
-    byteBuffer.pushTribyte(value, order, transformation);
+    byteBuffer.pushTribyte(value, transformation, order);
 
     ExpectBuffersToBeEqual(byteBuffer.buffer, Buffer.from(expected));
   }
@@ -37,7 +37,7 @@ export class ByteBufferPushTribyteTestFixture {
   public shouldPushNegativeTribyteCorrectly(negative: number, expected: Array<string>) {
     const byteBuffer = new FixedWritableByteBuffer(3);
 
-    byteBuffer.pushTribyte(negative, DataOrder.BIG_ENDIAN);
+    byteBuffer.pushTribyte(negative, Transformation.NONE, DataOrder.BIG_ENDIAN);
 
     ExpectBuffersToBeEqual(byteBuffer.buffer, Buffer.from(expected));
   }

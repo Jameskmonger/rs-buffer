@@ -17,7 +17,7 @@ export class ByteBufferPushIntTestFixture {
   public shouldPushIntInCorrectOrder(value: number, order: DataOrder, mixed: boolean, expected: Array<number>) {
     const byteBuffer = new FixedWritableByteBuffer(4);
 
-    byteBuffer.pushInt(value, order, mixed);
+    byteBuffer.pushInt(value, Transformation.NONE, order, mixed);
 
     ExpectBuffersToBeEqual(byteBuffer.buffer, Buffer.from(expected));
   }
@@ -37,7 +37,7 @@ export class ByteBufferPushIntTestFixture {
   public shouldApplyTransformationToLSB(value: number, transformation: Transformation, order: DataOrder, mixed: boolean, expected: Array<number>) {
     const byteBuffer = new FixedWritableByteBuffer(4);
 
-    byteBuffer.pushInt(value, order, mixed, transformation);
+    byteBuffer.pushInt(value, transformation, order, mixed);
 
     ExpectBuffersToBeEqual(byteBuffer.buffer, Buffer.from(expected));
   }
@@ -47,7 +47,7 @@ export class ByteBufferPushIntTestFixture {
   public shouldPushNegativeIntCorrectly(negative: number, expected: Array<string>) {
     const byteBuffer = new FixedWritableByteBuffer(4);
 
-    byteBuffer.pushInt(negative, DataOrder.BIG_ENDIAN, false);
+    byteBuffer.pushInt(negative, Transformation.NONE, DataOrder.BIG_ENDIAN, false);
 
     ExpectBuffersToBeEqual(byteBuffer.buffer, Buffer.from(expected));
   }
