@@ -1,6 +1,7 @@
 import { Transformation } from "./transformation";
 import { reverseTransformation } from "./util/apply-transformation";
 import { wrapNumber } from "./util/wrap-number";
+import { DataOrder } from "./data-order";
 
 export class ReadableByteBuffer {
 
@@ -40,9 +41,13 @@ export class ReadableByteBuffer {
             : transformed & 0xFF;
     }
 
-    public readShort(signed: boolean = true, transformation: Transformation = Transformation.NONE): number {
-        const msb = this.getNextFromBuffer();
-        const lsb = reverseTransformation(this.getNextFromBuffer(), transformation);
+    public readShort(signed: boolean = true, transformation: Transformation = Transformation.NONE, order: DataOrder = DataOrder.BIG_ENDIAN): number {
+        const first = this.getNextFromBuffer();
+        const second = this.getNextFromBuffer();
+
+        const [msb, lsb] = order === DataOrder.BIG_ENDIAN
+            ? [first, reverseTransformation(second, transformation)]
+            : [second, reverseTransformation(first, transformation)];
 
         const result = (msb << 8) + (lsb & 0xFF);
 
@@ -51,10 +56,14 @@ export class ReadableByteBuffer {
             : result & 0xFFFF;
     }
 
-    public readTribyte(signed: boolean = true, transformation: Transformation = Transformation.NONE): number {
-        const msb1 = this.getNextFromBuffer() & 0xFF;
-        const msb2 = this.getNextFromBuffer() & 0xFF;
-        const lsb = reverseTransformation(this.getNextFromBuffer(), transformation) & 0xFF;
+    public readTribyte(signed: boolean = true, transformation: Transformation = Transformation.NONE, order: DataOrder = DataOrder.BIG_ENDIAN): number {
+        const first = this.getNextFromBuffer();
+        const second = this.getNextFromBuffer();
+        const third = this.getNextFromBuffer();
+
+        const [msb1, msb2, lsb] = order === DataOrder.BIG_ENDIAN
+            ? [first & 0xFF, second & 0xFF, reverseTransformation(third, transformation) & 0xFF]
+            : [third & 0xFF, second & 0xFF, reverseTransformation(first, transformation) & 0xFF];
 
         const result = (msb1 << 16) + (msb2 << 8) + (lsb);
 
@@ -63,29 +72,51 @@ export class ReadableByteBuffer {
             : result & 0xFFFFFF;
     }
 
-    public readInt(signed: boolean = true, transformation: Transformation = Transformation.NONE): number {
-        if (signed) {
-            return this.readSignedInt(transformation);
-        }
-
-        return this.readUnsignedInt(transformation);
-    }
-
-    private readUnsignedInt(transformation: Transformation) {
-        const msb1 = this.getNextFromBuffer() & 0xFF;
-        const msb2 = this.getNextFromBuffer() & 0xFF;
-        const msb3 = this.getNextFromBuffer() & 0xFF;
-        const lsb = reverseTransformation(this.getNextFromBuffer(), transformation) & 0xFF;
-
-        return (msb1 << 24 >>> 0) + (msb2 << 16) + (msb3 << 8) + (lsb);
-    }
-
-    private readSignedInt(transformation: Transformation) {
+    public readInt(signed: boolean = true, transformation: Transformation = Transformation.NONE, order: DataOrder = DataOrder.BIG_ENDIAN, mixed: boolean = false): number {
         const msb1 = this.getNextFromBuffer();
         const msb2 = this.getNextFromBuffer();
         const msb3 = this.getNextFromBuffer();
-
         const lsb = this.getNextFromBuffer();
+
+        if (signed) {
+            return this.readSignedInt(msb1, msb2, msb3, lsb, transformation, order, mixed);
+        }
+
+        return this.readUnsignedInt(msb1, msb2, msb3, lsb, transformation, order, mixed);
+    }
+
+    private orderIntOctets(first: number, second: number, third: number, fourth: number, order: DataOrder, mixed: boolean) {
+        if (order === DataOrder.BIG_ENDIAN) {
+            if (mixed) {
+                return [ third, fourth, first, second ];
+            } else {
+                return [ first, second, third, fourth ];
+            }
+        } else if (order === DataOrder.LITTLE_ENDIAN) {
+            if (mixed) {
+                return [ second, first, fourth, third ];
+            } else {
+                return [ fourth, third, second, first ];
+            }
+        }
+    }
+
+    private readUnsignedInt(first: number, second: number, third: number, fourth: number, transformation: Transformation, order: DataOrder, mixed: boolean) {
+        const [ msb1, msb2, msb3, lsb ] = this.orderIntOctets(first, second, third, fourth, order, mixed);
+
+        const reversed = reverseTransformation(lsb, transformation);
+
+        return (
+            ((msb1 & 0xFF) << 24 >>> 0)
+            + ((msb2 & 0xFF) << 16)
+            + ((msb3 & 0xFF) << 8)
+            + (reversed & 0xFF)
+        );
+    }
+
+    private readSignedInt(first: number, second: number, third: number, fourth: number, transformation: Transformation, order: DataOrder, mixed: boolean) {
+        const [ msb1, msb2, msb3, lsb ] = this.orderIntOctets(first, second, third, fourth, order, mixed);
+
         const transformedLsb = reverseTransformation(lsb, transformation);
         const wrappedLsb = wrapNumber(transformedLsb, -0x80, 0x7F);
 
@@ -93,11 +124,18 @@ export class ReadableByteBuffer {
         return wrapNumber(result, -0x80000000, 0x7FFFFFFF);
     }
 
-    public readLong(transformation: Transformation = Transformation.NONE): [ number, number ] {
-        const high = this.readInt(false);
-        const low = this.readInt(false, transformation);
+    public readLong(transformation: Transformation = Transformation.NONE, order: DataOrder = DataOrder.BIG_ENDIAN): [number, number] {
+        if (order === DataOrder.BIG_ENDIAN) {
+            const first = this.readInt(false, Transformation.NONE, order);
+            const second = this.readInt(false, transformation, order);
 
-        return [ high, low ];
+            return [ first, second ];
+        }
+
+        const first = this.readInt(false, transformation, order);
+        const second = this.readInt(false, Transformation.NONE, order);
+
+        return [ second, first ];
     }
 
     public readString(): string {
